@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Заказ оформлен — ПАРТС{% endblock %}
+{% block content %}
+<div class="max-w-xl mx-auto sm:mt-6">
+    <div class="w-14 h-14 rounded-full bg-ok text-white grid place-items-center">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+    </div>
+    <h1 class="mt-5 text-2xl sm:text-3xl font-extrabold tracking-tight">Заказ{% if order_id %} № {{ order_id }}{% endif %} оформлен</h1>
+    <p class="mt-2 text-muted dark:text-night-muted">Товар зарезервирован на складе. Что будет дальше:</p>
+    <ol class="mt-5 grid gap-3">
+        <li class="flex gap-3"><span class="w-7 h-7 shrink-0 rounded-full bg-signal text-ink grid place-items-center text-sm font-bold">1</span><span>Менеджер позвонит, чтобы подтвердить заказ и согласовать доставку, если она нужна.</span></li>
+        <li class="flex gap-3"><span class="w-7 h-7 shrink-0 rounded-full bg-paper dark:bg-night border border-line dark:border-night-line grid place-items-center text-sm font-bold">2</span><span>Заберите заказ на складе выбранного города или получите доставкой.</span></li>
+        <li class="flex gap-3"><span class="w-7 h-7 shrink-0 rounded-full bg-paper dark:bg-night border border-line dark:border-night-line grid place-items-center text-sm font-bold">3</span><span>Оплата при получении — наличными, переводом или картой.</span></li>
+    </ol>
+    <div class="mt-8 flex flex-wrap gap-3">
+        <a href="/auth/account" class="btn-primary">Мои заказы</a>
+        <a href="/catalog" class="btn-secondary">Продолжить покупки</a>
+    </div>
+    {% if seo.bot_link() and request.state.user and not request.state.user.telegram_id %}
+    <form action="/auth/telegram/link" method="post" class="mt-8 card p-4 flex flex-wrap items-center gap-3">
+        <span class="flex-1 min-w-[14rem] text-[15px]"><b>Статус заказа — в Telegram.</b> Подключите бота: пришлём, когда заказ будет готов.</span>
+        <button class="btn h-10 px-4 text-sm bg-[#2AABEE] text-white hover:bg-[#229ED9]">Подключить Telegram</button>
+    </form>
+    {% endif %}
+    <p class="mt-6 hint">Вопросы по заказу: <a href="{{ shop.phone_href }}" class="link font-semibold">{{ shop.phone }}</a></p>
+</div>
+{% endblock %}

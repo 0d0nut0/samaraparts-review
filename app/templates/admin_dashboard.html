@@ -1,0 +1,66 @@
+{% extends "admin_base.html" %}
+{% import "admin_macros.html" as m with context %}
+{% block title %}Админ — Дашборд{% endblock %}
+{% block admin_content %}
+<h1 class="adm-h1 mb-6">Панель управления</h1>
+
+<h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Склад и каталог</h2>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+    {{ m.stat("Активных позиций", stock.total_parts) }}
+    {{ m.stat("Единиц на складе", stock.total_stock) }}
+    {{ m.stat("Оценка склада (розница)", m.money0(stock.retail_value)) }}
+    {{ m.stat("Себестоимость склада", m.money0(stock.cost_value)) }}
+</div>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    {{ m.stat("Ожидаемая валовая прибыль", m.money0(stock.margin_value), "маржа ~" ~ "%.1f"|format(stock.margin_pct) ~ "%") }}
+    <a href="/admin/alerts" class="block">{{ m.stat("Низкий остаток", stock.low_stock ~ " поз.", "≤ порога алерта") }}</a>
+    <a href="/admin/orders?status=PENDING" class="block">{{ m.stat("Новые заказы", stock.pending_orders) }}</a>
+    <a href="/admin/wholesale" class="block">{{ m.stat("Заявки на опт", stock.pending_wholesale, "пользователей: " ~ stock.total_users) }}</a>
+</div>
+
+<h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Продажи (без отменённых)</h2>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    {% for key, title in [("today", "Сегодня"), ("week", "7 дней"), ("month", "30 дней"), ("all", "Всё время")] %}
+    {% set p = kpi[key] %}
+    {{ m.stat(title, m.money0(p.revenue), p.count ~ " заказов · ср. чек " ~ m.money0(p.avg_check)) }}
+    {% endfor %}
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <div class="adm-card overflow-x-auto">
+        <h3 class="px-4 pt-4 pb-2 font-bold text-gray-900 dark:text-white">Топ клиентов</h3>
+        <table class="w-full">
+            <thead><tr><th class="adm-th">Клиент</th><th class="adm-th">Заказов</th><th class="adm-th">Сумма</th><th class="adm-th">Последний</th></tr></thead>
+            <tbody>
+            {% for c in top_clients %}
+            <tr>
+                <td class="adm-td font-semibold">{{ c.User.username }}{% if c.User.is_wholesale %} <span class="adm-badge border-blue-500/30 text-blue-600">опт</span>{% endif %}</td>
+                <td class="adm-td font-mono">{{ c.orders_count }}</td>
+                <td class="adm-td font-mono">{{ m.money0(c.total_spent) }}</td>
+                <td class="adm-td adm-muted font-mono">{{ c.last_order.strftime('%d.%m.%Y') if c.last_order else '—' }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="adm-td text-center adm-muted">Пока нет заказов</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="adm-card overflow-x-auto">
+        <h3 class="px-4 pt-4 pb-2 font-bold text-gray-900 dark:text-white">Топ товаров</h3>
+        <table class="w-full">
+            <thead><tr><th class="adm-th">Товар</th><th class="adm-th">Продано</th><th class="adm-th">Выручка</th></tr></thead>
+            <tbody>
+            {% for p, sold, revenue in top_products %}
+            <tr>
+                <td class="adm-td"><div class="font-semibold">{{ p.name }}</div><div class="adm-muted font-mono">{{ p.sku }}</div></td>
+                <td class="adm-td font-mono">{{ sold }}</td>
+                <td class="adm-td font-mono">{{ m.money0(revenue) }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3" class="adm-td text-center adm-muted">Нет данных о продажах</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

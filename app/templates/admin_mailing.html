@@ -1,0 +1,44 @@
+{% extends "admin_base.html" %}
+{% block title %}Админ — Рассылки{% endblock %}
+{% block admin_content %}
+<h1 class="adm-h1 mb-2">Рассылки</h1>
+<p class="adm-muted mb-6">Письма подтверждения регистрации отправляются через SMTP. Здесь сохраняются черновики рассылок; отправка по сегментам пока не подключена.</p>
+
+<form method="post" action="/admin/mailing/create" class="adm-card p-6 mb-8 grid grid-cols-1 gap-5 max-w-3xl">
+    <div>
+        <label class="adm-label">Тема</label>
+        <input class="adm-input" name="subject" required maxlength="255">
+    </div>
+    <div>
+        <label class="adm-label">Текст</label>
+        <textarea class="adm-input" name="body_template" rows="5" required></textarea>
+    </div>
+    <div>
+        <label class="adm-label">Получатели</label>
+        <select class="adm-input" name="target_segment">
+            <option value="all">Все пользователи ({{ segments.all }})</option>
+            <option value="wholesale">Оптовые покупатели ({{ segments.wholesale }})</option>
+            <option value="retail">Розничные покупатели ({{ segments.retail }})</option>
+        </select>
+    </div>
+    <div><button class="adm-btn" type="submit">Сохранить черновик</button></div>
+</form>
+
+<div class="adm-card overflow-x-auto">
+    <table class="w-full">
+        <thead><tr><th class="adm-th">Тема</th><th class="adm-th">Сегмент</th><th class="adm-th">Статус</th><th class="adm-th">Создано</th></tr></thead>
+        <tbody>
+        {% for m in mailings %}
+        <tr>
+            <td class="adm-td"><div class="font-semibold">{{ m.subject }}</div><div class="adm-muted line-clamp-2">{{ m.body_template }}</div></td>
+            <td class="adm-td">{{ m.target_segment }}</td>
+            <td class="adm-td">{{ m.status.name }}</td>
+            <td class="adm-td font-mono text-xs">{{ m.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="adm-td text-center adm-muted py-8">Рассылок не создано.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

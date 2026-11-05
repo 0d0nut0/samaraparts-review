@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% import "_ui.html" as ui with context %}
+{% block title %}Оформление заказа — ПАРТС{% endblock %}
+
+{% block content %}
+<nav class="mb-4 text-sm"><a href="/cart" class="link">← Вернуться в корзину</a></nav>
+<h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-6">Оформление заказа</h1>
+
+<form action="/checkout/process" method="post" class="grid lg:grid-cols-[1fr_380px] gap-6 items-start" id="checkout">
+    <div class="grid gap-6">
+        <fieldset class="card p-5 sm:p-6">
+            <legend class="sr-only">Получатель</legend>
+            <h2 class="text-lg font-bold mb-4">Получатель</h2>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="label" for="name">Имя</label>
+                    <input class="field" id="name" type="text" name="customer_name" required autocomplete="name" value="{{ prefill.name }}" placeholder="Как к вам обращаться">
+                </div>
+                <div>
+                    <label class="label" for="phone">Телефон</label>
+                    <input class="field" id="phone" type="tel" name="customer_phone" required autocomplete="tel" inputmode="tel" value="{{ prefill.phone }}" placeholder="+7 900 000-00-00" pattern="[0-9+()\s\-]{6,}">
+                    <p class="hint mt-1">Позвоним, чтобы подтвердить заказ</p>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset class="card p-5 sm:p-6">
+            <legend class="sr-only">Получение</legend>
+            <h2 class="text-lg font-bold mb-1">Где забрать</h2>
+            <p class="hint mb-4">Товар резервируется на складе выбранного города.</p>
+            <div class="grid sm:grid-cols-2 gap-3">
+                {% for c in cities %}
+                {% set ok = short[c.id] == 0 %}
+                <label class="relative flex gap-3 p-4 rounded-xl border-2 cursor-pointer border-line dark:border-night-line has-[:checked]:border-ink dark:has-[:checked]:border-night-text has-[:checked]:bg-paper dark:has-[:checked]:bg-night">
+                    <input type="radio" name="city_id" value="{{ c.id }}" required class="mt-1 accent-ink" {% if c.id == default_city %}checked{% endif %}>
+                    <span>
+                        <span class="block font-semibold">{{ c.name }}</span>
+                        {% if ok %}
+                        <span class="block text-sm stock-ok">Всё в наличии</span>
+                        {% else %}
+                        <span class="block text-sm text-amber-700 dark:text-amber-400">Не хватает позиций: {{ short[c.id] }}</span>
+                        {% endif %}
+                    </span>
+                </label>
+                {% endfor %}
+            </div>
+            <div class="mt-5 grid gap-2" id="delivery-options">
+                <label class="flex items-center gap-2"><input type="radio" name="delivery_method" value="pickup" checked> Самовывоз</label>
+                <label class="flex items-center gap-2"><input type="radio" name="delivery_method" value="delivery"> Доставка</label>
+                <p class="hint">Скидка за самовывоз доступна после входа в аккаунт.</p>
+            </div>
+            <div class="mt-5">
+                <label class="label" for="address">Адрес доставки <span class="text-muted font-normal">— для доставки</span></label>
+                <input class="field" id="address" type="text" name="address" autocomplete="street-address" maxlength="500" placeholder="Город, улица, дом, квартира" disabled>
+                <p class="hint mt-1">Стоимость и срок доставки менеджер сообщит при подтверждении. <a href="/delivery" class="link" target="_blank">Условия доставки</a></p>
+            </div>
+            <div class="mt-5">
+                <label class="label" for="comment">Комментарий к заказу <span class="text-muted font-normal">— необязательно</span></label>
+                <textarea class="field" id="comment" name="comment" rows="2" maxlength="1000" placeholder="Модель устройства, удобное время звонка…"></textarea>
+            </div>
+        </fieldset>
+    </div>
+
+    <aside class="card p-5 lg:sticky lg:top-24" aria-label="Ваш заказ">
+        <h2 class="text-lg font-bold mb-3">Ваш заказ</h2>
+        <div id="checkout-summary" aria-live="polite">{% include "_checkout_summary.html" %}</div>
+        <div class="mt-4"><label class="flex items-start gap-2.5 text-[13px] leading-snug text-muted dark:text-night-muted cursor-pointer">
+            <input type="checkbox" name="consent" value="1" required class="mt-0.5 w-4 h-4 accent-ink shrink-0" >
+            <span>Даю согласие на <a href="/privacy" target="_blank" class="link">обработку персональных данных</a> для оформления и доставки заказа</span>
+        </label></div>
+        <button type="submit" class="btn-primary w-full mt-4 h-12 text-base" id="submit-order">Подтвердить заказ</button>
+        <p class="hint mt-3">Оплата при получении: наличными, переводом или картой. Юрлицам — по счёту. <a href="/payment" class="link" target="_blank">Подробнее</a></p>
+    </aside>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const addressField = document.getElementById('address');
+    document.querySelectorAll('[name="delivery_method"]').forEach(radio => {
+        radio.setAttribute('hx-get', '/checkout/summary');
+        radio.setAttribute('hx-trigger', 'change');
+        radio.setAttribute('hx-target', '#checkout-summary');
+        radio.setAttribute('hx-include', '[name="delivery_method"]:checked');
+        radio.setAttribute('hx-sync', '#delivery-options:replace');
+        radio.addEventListener('change', () => {
+            const delivery = document.querySelector('[name="delivery_method"]:checked').value === 'delivery';
+            addressField.disabled = !delivery;
+            addressField.required = delivery;
+            document.getElementById('submit-order').disabled = true;
+        });
+    });
+    htmx.process(document.getElementById('delivery-options'));
+    document.body.addEventListener('htmx:afterRequest', event => {
+        if (event.detail.elt.name === 'delivery_method') {
+            document.getElementById('submit-order').disabled = !event.detail.successful;
+        }
+    });
+    // Защита от двойной отправки заказа
+    document.getElementById('checkout').addEventListener('submit', () => {
+        const b = document.getElementById('submit-order');
+        b.disabled = true; b.textContent = 'Оформляем…';
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+line;series;privacy;model;qty;cost
+1;GL-27;1;iPhone 17 Pro Max;10;175
+2;GL-27;1;iPhone 17 Pro;10;175
+3;GL-27;1;iPhone 16 Pro Max;10;175
+4;GL-27;1;iPhone 16 Pro/17;10;175
+5;GL-27;1;iPhone 15 Pro Max (6.7);10;175
+6;GL-27;1;iPhone 15 Pro (6.1);10;175
+7;GL-27;1;iPhone 15 Plus/16 Plus;10;175
+8;GL-27;1;iPhone 15/16;10;175
+9;GL-27;1;iPhone 14 Pro Max;10;175
+10;GL-27;1;iPhone 14 Pro;10;175
+11;GL-27;1;iPhone 14 Plus/13 Pro Max;10;175
+12;GL-27;1;iPhone 13/13 Pro/14;10;175
+13;GL-27;0;iPhone 15 Pro Max (6.7);10;125
+14;GL-27;0;iPhone 15 Pro (6.1);10;125
+15;GL-27;0;iPhone 17 Pro Max/18 Pro Max;12;125
+16;GL-27;0;iPhone 17 Pro/18 Pro;11;125
+17;GL-27;0;iPhone 16 Pro Max (6.9);10;125
+18;GL-27;0;iPhone 16 Pro/17 (6.3);10;125
+19;GL-27;0;iPhone 15 Plus/16 Plus;10;125
+20;GL-27;0;iPhone 15/16;10;125
+21;GL-27;0;iPhone 14 Pro Max (6.7);10;125
+22;GL-27;0;iPhone 14 Pro (6.1);10;125
+23;GL-27;0;iPhone 14 Plus/13 Pro Max (6.7);10;125
+24;GL-27;0;iPhone 14/13/13 Pro (6.1);10;125
+25;GL-27;0;iPhone 13 mini (5.4);10;125
+26;GL-83;0;iPhone 14/13/13 Pro;10;265
+27;GL-83;0;iPhone 14 Pro (6.1);10;265
+28;GL-83;0;iPhone 15;10;265
+29;GL-83;0;iPhone 15 Pro (6.1);10;265
+30;GL-83;0;iPhone 15 Pro Max (6.7);10;265
+31;GL-83;0;iPhone 16 Pro;10;265
+32;GL-83;0;iPhone 16 Pro Max;10;265
+33;GL-83;0;iPhone 17 Pro/18 Pro;10;265
+34;GL-83;0;iPhone 17 Pro Max/18 Pro Max;10;265
+35;GL-86;0;iPhone 14 Plus/13 Pro Max (6.7);10;315
+36;GL-86;0;iPhone 14 Pro (6.1);10;315
+37;GL-86;0;iPhone 14 Pro Max (6.7);10;315
+38;GL-86;0;iPhone 15 (6.1);10;315
+39;GL-86;0;iPhone 15 Pro (6.1);10;315
+40;GL-86;0;iPhone 15 Pro Max (6.7);10;315
+41;GL-86;0;iPhone 16 Pro Max (6.9);10;315
+42;GL-86;0;iPhone 17 Pro;10;315
+43;GL-86;0;iPhone 17 Pro Max;10;315
+44;GL-86;0;iPhone 16 Pro (6.3);10;315

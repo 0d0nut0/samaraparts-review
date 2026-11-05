@@ -1,0 +1,19 @@
+{
+  "odata.metadata": "https://v12.arenda-it.com/efd8bqtl/odata/standard.odata/$metadata#Catalog_Номенклатура",
+  "value": [
+    {
+      "Ref_Key": "53f596cf-d74f-11f1-a2af-00155d01c829",
+      "Description": "Аккумулторы",
+      "Артикул": null,
+      "НаименованиеПолное": null,
+      "ЕдиницаИзмерения_Key": null
+    },
+    {
+      "Ref_Key": "53f596ce-d74f-11f1-a2af-00155d01c829",
+      "Description": "Дисплеи",
+      "Артикул": null,
+      "НаименованиеПолное": null,
+      "ЕдиницаИзмерения_Key": null
+    }
+  ]
+}

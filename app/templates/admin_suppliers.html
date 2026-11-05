@@ -1,0 +1,48 @@
+{% extends "admin_base.html" %}
+{% import "admin_macros.html" as m with context %}
+{% block title %}Админ — Поставщики{% endblock %}
+{% block admin_content %}
+<h1 class="adm-h1 mb-6">Поставщики</h1>
+
+<div class="adm-card overflow-x-auto mb-8">
+    <table class="w-full">
+        <thead>
+            <tr>
+                <th class="adm-th">Поставщик</th><th class="adm-th">Поставок</th><th class="adm-th">Принято, шт.</th>
+                <th class="adm-th">Средняя партия</th><th class="adm-th">Сумма закупок</th><th class="adm-th">Последняя поставка</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for s, deliveries, received, avg_batch, total_cost, last_delivery in rows %}
+        <tr>
+            <td class="adm-td"><div class="font-semibold text-gray-900 dark:text-white">{{ s.name }}</div><div class="adm-muted">{{ s.contact_info or '' }}{% if s.average_delivery_days %} · срок {{ s.average_delivery_days }} дн.{% endif %}</div></td>
+            <td class="adm-td font-mono">{{ deliveries }}</td>
+            <td class="adm-td font-mono">{{ received }}</td>
+            <td class="adm-td font-mono">{{ "%.1f"|format(avg_batch) if avg_batch else '—' }}</td>
+            <td class="adm-td font-mono">{{ m.money0(total_cost) }}</td>
+            <td class="adm-td font-mono text-xs">{{ last_delivery.strftime('%d.%m.%Y') if last_delivery else '—' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="adm-td text-center adm-muted py-8">Поставщики не добавлены.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<form method="post" action="/admin/suppliers/add" class="adm-card p-6 max-w-2xl grid grid-cols-1 md:grid-cols-2 gap-5">
+    <h3 class="md:col-span-2 font-bold text-gray-900 dark:text-white">Добавить поставщика</h3>
+    <div>
+        <label class="adm-label">Название</label>
+        <input class="adm-input" name="name" required maxlength="255">
+    </div>
+    <div>
+        <label class="adm-label">Срок поставки, дней</label>
+        <input class="adm-input font-mono" type="number" min="0" name="average_delivery_days" value="0">
+    </div>
+    <div class="md:col-span-2">
+        <label class="adm-label">Контакты</label>
+        <input class="adm-input" name="contact_info" maxlength="1000">
+    </div>
+    <div class="md:col-span-2"><button class="adm-btn" type="submit">Добавить</button></div>
+</form>
+{% endblock %}

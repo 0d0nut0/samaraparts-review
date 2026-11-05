@@ -1,0 +1,61 @@
+{% extends "admin_base.html" %}
+{% block title %}Админ — Приход товара{% endblock %}
+{% block admin_content %}
+<h1 class="adm-h1 mb-6">Приход товара</h1>
+
+<form method="post" action="/admin/products/receive/upload" enctype="multipart/form-data" class="adm-card p-6 max-w-2xl grid gap-4 mb-6">
+    <div>
+        <h2 class="font-bold">Поставка файлом</h2>
+        <p class="adm-muted mt-1">Excel (.xlsx) или CSV: колонки «Артикул», «Количество» и, если есть, «Цена» (закупка за шт.). Первая строка — заголовки. Неизвестные артикулы покажем списком, остальное оприходуем.</p>
+    </div>
+    <div class="grid sm:grid-cols-3 gap-3 items-end">
+        <input type="file" name="file" accept=".xlsx,.csv" required class="adm-input sm:col-span-3">
+        <select name="city_id" required class="adm-input">{% for c in cities %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select>
+        <select name="supplier_id" class="adm-input"><option value="">Поставщик не указан</option>{% for s in suppliers %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select>
+        <button class="adm-btn">Загрузить поставку</button>
+    </div>
+</form>
+{% if report %}
+<div class="adm-card p-5 max-w-2xl mb-6 text-sm">
+    <p class="font-semibold">Оприходовано позиций: {{ report.ok }} ({{ report.units }} шт.)</p>
+    {% if report.errors %}<p class="mt-2 text-red-600 dark:text-red-400">Не загружено:</p><ul class="list-disc pl-5 mt-1">{% for e in report.errors[:50] %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+</div>
+{% endif %}
+
+<h2 class="font-bold mb-3">Одна позиция</h2>
+
+<form method="post" action="/admin/products/receive" class="adm-card p-6 max-w-2xl grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div class="md:col-span-2">
+        <label class="adm-label">Товар (артикул или поиск по ключевым словам)</label>
+        <input type="text" name="article" value="{{ article or '' }}" required autocomplete="off" data-suggest="/admin/api/suggest" data-suggest-pick="sku" class="adm-input font-mono" placeholder="Артикул или запрос: «iPhone 11 дисплей», «realme c67 акб»">
+    </div>
+    <div>
+        <label class="adm-label">Количество, шт.</label>
+        <input type="number" name="quantity" min="1" required class="adm-input font-mono">
+    </div>
+    <div>
+        <label class="adm-label">Склад (город)</label>
+        <select name="city_id" required class="adm-input">
+            {% for c in cities %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+        </select>
+    </div>
+    <div>
+        <label class="adm-label">Закупочная цена за шт., ₽</label>
+        <input type="text" inputmode="decimal" name="purchase_price" class="adm-input font-mono" placeholder="не менять">
+    </div>
+    <div>
+        <label class="adm-label">Поставщик</label>
+        <select name="supplier_id" class="adm-input">
+            <option value="">— не указан —</option>
+            {% for s in suppliers %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="md:col-span-2">
+        <label class="adm-label">Примечание (накладная, дефекты)</label>
+        <input type="text" name="notes" class="adm-input" maxlength="500">
+    </div>
+    <div class="md:col-span-2">
+        <button type="submit" class="adm-btn">Оприходовать</button>
+    </div>
+</form>
+{% endblock %}

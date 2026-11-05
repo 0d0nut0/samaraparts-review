@@ -1,0 +1,108 @@
+{# Общие элементы витрины. Подключение: {% import "_ui.html" as ui with context %} #}
+
+{# Значок типа детали по названию товара — фото у товаров нет, значок помогает узнать деталь в списке #}
+{% macro part_icon(name, size='w-7 h-7') -%}
+{%- set n = (name or '')|lower -%}
+<svg class="{{ size }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+{%- if 'дисплей' in n or 'тачскрин' in n or 'матриц' in n or 'стекло для переклейки' in n -%}
+<rect x="6" y="2.5" width="12" height="19" rx="2"/><rect x="8" y="5" width="8" height="12.5" rx=".5"/>
+{%- elif 'аккумулятор' in n or 'батаре' in n or 'power bank' in n or 'ячейка' in n -%}
+<rect x="4" y="7" width="15" height="10" rx="1.5"/><path d="M19 10.5h1.5v3H19M8 12h4M10 10v4"/>
+{%- elif 'крышк' in n or 'корпус' in n or 'рамк' in n -%}
+<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><circle cx="9.5" cy="6.5" r="1.4"/><circle cx="9.5" cy="10" r="1.4"/>
+{%- elif 'шлейф' in n or 'кабел' in n or 'провод' in n -%}
+<path d="M5 4v5a3 3 0 0 0 3 3h8a3 3 0 0 1 3 3v5"/><rect x="3" y="2" width="4" height="3" rx=".5"/><rect x="17" y="19" width="4" height="3" rx=".5"/>
+{%- elif 'камер' in n -%}
+<rect x="3" y="6" width="18" height="13" rx="2"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/>
+{%- elif 'динамик' in n or 'звонок' in n or 'наушник' in n or 'гарнитур' in n or 'микрофон' in n -%}
+<path d="M5 10v4h3l4 3.5v-11L8 10z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>
+{%- elif 'заряд' in n or 'адаптер' in n or 'блок питания' in n -%}
+<path d="M8 2v4M16 2v4"/><rect x="5" y="6" width="14" height="8" rx="2"/><path d="M12 14v3a3 3 0 0 1-3 3H8"/>
+{%- elif 'стекл' in n or 'пленк' in n or 'плёнк' in n -%}
+<path d="M6 3h12l-1 18H7z"/><path d="M9.5 7l4 4M9 12l5 5"/>
+{%- elif 'микросхем' in n or 'контроллер' in n or 'плата' in n -%}
+<rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/>
+{%- elif 'клавиатур' in n or 'мыш' in n or 'геймпад' in n or 'playstation' in n or 'xbox' in n or 'nintendo' in n -%}
+<rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/>
+{%- elif 'паяль' in n or 'отвертк' in n or 'пинцет' in n or 'инструмент' in n or 'флюс' in n or 'припой' in n -%}
+<path d="M14.5 6.5l3-3 3 3-3 3M17.5 9.5L7 20H4v-3L14.5 6.5"/>
+{%- elif 'карта памяти' in n or 'флеш' in n or 'usb' in n -%}
+<path d="M7 3h7l4 4v14H7z"/><path d="M10 3v3M12.5 3v3M15 4.5v2"/>
+{%- elif 'чехол' in n or 'держател' in n -%}
+<rect x="6.5" y="2.5" width="11" height="19" rx="3"/><path d="M6.5 7h11"/>
+{%- else -%}
+<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9h16M9 9v11"/>
+{%- endif -%}
+</svg>
+{%- endmacro %}
+
+{# Сумма в рублях: копейки показываем, только если они есть (85,50 ₽ / 1 200 ₽) — ровно то, что будет к оплате #}
+{% macro money(value) -%}
+{%- set v = value or 0 -%}
+{%- if v != v|round(0, 'floor') -%}
+{{ "{:,.2f}".format(v).replace(",", " ").replace(".", ",") }}&nbsp;₽
+{%- else -%}
+{{ "{:,.0f}".format(v).replace(",", " ") }}&nbsp;₽
+{%- endif -%}
+{%- endmacro %}
+
+{# Наличие: в выбранном городе и всего #}
+{% macro stock_line(st, city) -%}
+{%- if st is none -%}
+<span class="stock-no">Под заказ</span>
+{%- elif st.city > 0 -%}
+<span class="stock-ok font-medium">● {{ st.city }} шт.</span> <span class="text-muted dark:text-night-muted">{{ 'на складе «' ~ city.name ~ '»' if city else 'в наличии' }}</span>
+{%- elif st.total > 0 -%}
+<span class="text-amber-700 dark:text-amber-400">В другом городе: {{ st.total }} шт.</span>
+{%- else -%}
+<span class="stock-no">Нет в наличии</span>
+{%- endif -%}
+{%- endmacro %}
+
+{# Карточка товара в сетке каталога #}
+{% macro product_card(p, st, city, wholesale=false) %}
+{% set bp = buyer_prices(p, wholesale, authenticated=(request.state.user is not none), price_type=(request.state.user.effective_price_type if request.state.user else none)) %}{% set price = bp.price %}
+<article data-product-card class="card flex flex-col p-4 hover:border-ink/40 dark:hover:border-night-muted transition">
+    <div class="flex items-start gap-3">
+        {% if p.image %}
+        <img src="{{ p.image }}" alt="" loading="lazy" class="w-16 h-16 shrink-0 rounded-lg object-contain bg-white border border-line dark:border-night-line">
+        {% else %}
+        <span class="w-11 h-11 shrink-0 rounded-lg bg-paper dark:bg-night text-ink/70 dark:text-night-muted grid place-items-center">{{ part_icon(p.name, 'w-6 h-6') }}</span>
+        {% endif %}
+        <div class="min-w-0">
+            <a href="/catalog/{{ p.sku|urlencode }}" class="block text-[15px] leading-snug font-medium line-clamp-3 hover:underline underline-offset-2">{{ p.name }}</a>
+            <div class="sku mt-1 truncate">{{ p.sku }}</div>
+        </div>
+    </div>
+    <div class="mt-auto pt-4">
+        <div class="text-[13px] mb-2.5">{{ stock_line(st, city) }}</div>
+        <div class="flex items-end justify-between gap-3">
+            {% if price is none %}
+            <div>
+                <div class="font-semibold leading-none">Цена по запросу</div>
+                <div class="hint mt-1">уточните у менеджера</div>
+            </div>
+            <button type="button" class="btn-secondary h-10 px-3 text-sm shrink-0 whitespace-nowrap" onclick='openChat({{ ("Подскажите цену: " ~ p.name ~ " (" ~ p.sku ~ ")")|tojson }})'>Узнать цену</button>
+            {% else %}
+            <div>
+                <div class="price text-xl leading-none">{{ money(price) }}</div>
+                <div class="hint mt-1">{% if bp.wholesale %}оптовая цена{% else %}розничная цена{% endif %}</div>
+            </div>
+            {% if st and st.total > 0 %}
+            <button type="button" class="btn-primary h-10 px-3 text-sm shrink-0 whitespace-nowrap"
+                    hx-post="/cart/add" hx-vals='{{ {"sku": p.sku}|tojson }}' hx-swap="none"
+                    data-add-to-cart data-name="{{ p.name[:60] }}"
+                    data-done="✓ Добавлено">В корзину</button>
+            {% else %}
+            <button type="button" class="btn-secondary h-10 px-3 text-sm shrink-0 whitespace-nowrap" onclick='openChat({{ ("Под заказ: " ~ p.name ~ " (" ~ p.sku ~ "). Когда будет?")|tojson }})'>Под заказ</button>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% if price is not none %}
+        <div class="hint mt-3 pt-3 border-t border-line/60 dark:border-night-line">
+            Розница и опт · {{ 'Ваш тариф: ' ~ {'retail':'Розница','wholesale':'ОПТ','super_wholesale':'СуперОПТ'}.get(bp.price_type, 'Розница') if request.state.user else 'Оптовые условия — после одобрения заявки' }}
+        </div>
+        {% endif %}
+    </div>
+</article>
+{% endmacro %}

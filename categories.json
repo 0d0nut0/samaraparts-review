@@ -1,0 +1,462 @@
+[
+  {
+    "name": "Аккумуляторы",
+    "url": "/catalog/akkumulyatory-1/",
+    "level": 0
+  },
+  {
+    "name": "Аккумуляторы Бытовые",
+    "url": "/catalog/akkumulyatory-bytovye/",
+    "level": 1
+  },
+  {
+    "name": "Аккумуляторы Универсальные",
+    "url": "/catalog/akkumulyatory-universalnye/",
+    "level": 1
+  },
+  {
+    "name": "Аккумуляторы для мобильных устройств",
+    "url": "/catalog/akkumulyatory-dlya-mobilnykh-ustroystv/",
+    "level": 1
+  },
+  {
+    "name": "Ячейки (банки) Аккумулятора",
+    "url": "/catalog/yacheyki-banki-akkumulyatora/",
+    "level": 1
+  },
+  {
+    "name": "Аксессуары",
+    "url": "/catalog/aksessuary/",
+    "level": 0
+  },
+  {
+    "name": "Беспроводные наушники Bluetooth",
+    "url": "/catalog/besprovodnye-naushniki-bluetooth/",
+    "level": 1
+  },
+  {
+    "name": "Внешние Аккумуляторы (Power Bank)",
+    "url": "/catalog/vneshnie-akkumulyatory-usb-power-bank/",
+    "level": 1
+  },
+  {
+    "name": "Гарнитуры",
+    "url": "/catalog/garnitury/",
+    "level": 1
+  },
+  {
+    "name": "Держатели",
+    "url": "/catalog/derzhateli/",
+    "level": 1
+  },
+  {
+    "name": "Зарядные устройства",
+    "url": "/catalog/zaryadnye-ustroystva/",
+    "level": 1
+  },
+  {
+    "name": "Защитные заглушки и сетки",
+    "url": "/catalog/zashchitnye-zaglushki-i-setki/",
+    "level": 1
+  },
+  {
+    "name": "Кабели, адаптеры",
+    "url": "/catalog/kabeli-adaptery/",
+    "level": 1
+  },
+  {
+    "name": "Прочие аксессуары",
+    "url": "/catalog/prochie-aksessuary/",
+    "level": 1
+  },
+  {
+    "name": "Сетевые фильтры, блоки и кабели питания бытовые",
+    "url": "/catalog/setevye-filtry-bloki-i-kabeli-pitaniya-bytovye/",
+    "level": 1
+  },
+  {
+    "name": "Чехлы",
+    "url": "/catalog/chekhly/",
+    "level": 1
+  },
+  {
+    "name": "Батарейки",
+    "url": "/catalog/batareyki/",
+    "level": 0
+  },
+  {
+    "name": "Дисплеи",
+    "url": "/catalog/displei/",
+    "level": 0
+  },
+  {
+    "name": "Задние крышки и корпуса",
+    "url": "/catalog/zadnie-kryshki-i-korpusa/",
+    "level": 0
+  },
+  {
+    "name": "Запчасти",
+    "url": "/catalog/zapchasti/",
+    "level": 0
+  },
+  {
+    "name": "Антенные провода",
+    "url": "/catalog/antennye-provoda/",
+    "level": 1
+  },
+  {
+    "name": "Вибромоторы и магниты беспроводной зарядки",
+    "url": "/catalog/vibromotory-i-magnity-besprovodnoy-zaryadki/",
+    "level": 1
+  },
+  {
+    "name": "Динамики (speaker)",
+    "url": "/catalog/dinamiki-speaker/",
+    "level": 1
+  },
+  {
+    "name": "Звонки (buzzer)",
+    "url": "/catalog/zvonki-buzzer/",
+    "level": 1
+  },
+  {
+    "name": "Камеры",
+    "url": "/catalog/kamery/",
+    "level": 1
+  },
+  {
+    "name": "Кнопки включения/громкости",
+    "url": "/catalog/knopki-vklyucheniya-gromkosti/",
+    "level": 1
+  },
+  {
+    "name": "Коннекторы - SIM, MMC, АКБ, LCD, FPC и т.п.",
+    "url": "/catalog/konnektory-sim-mmc-akb-lcd-fpc-i-t-p/",
+    "level": 1
+  },
+  {
+    "name": "Материнские платы",
+    "url": "/catalog/materinskie-platy/",
+    "level": 1
+  },
+  {
+    "name": "Микрофоны",
+    "url": "/catalog/mikrofony/",
+    "level": 1
+  },
+  {
+    "name": "Разъемы - зарядки (MicroUSB, Type-C, Lightning, MiniUSB и т.п.)",
+    "url": "/catalog/razemy-zaryadki-microusb-type-c-lightning-miniusb-i-t-p-/",
+    "level": 1
+  },
+  {
+    "name": "Запчасти для ПК, ноутбуков и телевизоров",
+    "url": "/catalog/zapchasti-dlya-pk-noutbukov-i-televizorov/",
+    "level": 0
+  },
+  {
+    "name": "Аккумуляторы",
+    "url": "/catalog/akkumulyatory/",
+    "level": 1
+  },
+  {
+    "name": "Блоки и кабели питания",
+    "url": "/catalog/bloki-i-kabeli-pitaniya/",
+    "level": 1
+  },
+  {
+    "name": "Видеокабели, переходники и удлинители",
+    "url": "/catalog/videokabeli-perekhodniki-i-udliniteli/",
+    "level": 1
+  },
+  {
+    "name": "Динамики",
+    "url": "/catalog/dinamiki/",
+    "level": 1
+  },
+  {
+    "name": "Жесткие диски и комплектующие",
+    "url": "/catalog/zhestkie-diski-i-komplektuyushchie/",
+    "level": 1
+  },
+  {
+    "name": "Клавиатуры",
+    "url": "/catalog/klaviatury/",
+    "level": 1
+  },
+  {
+    "name": "Крышки матриц",
+    "url": "/catalog/kryshki-matrits/",
+    "level": 1
+  },
+  {
+    "name": "Матрицы",
+    "url": "/catalog/matritsy/",
+    "level": 1
+  },
+  {
+    "name": "Оперативная память",
+    "url": "/catalog/operativnaya-pamyat/",
+    "level": 1
+  },
+  {
+    "name": "Петли для матриц",
+    "url": "/catalog/petli-dlya-matrits/",
+    "level": 1
+  },
+  {
+    "name": "Поддоны и резиновые элементы ноутбуков",
+    "url": "/catalog/rezinovye-uplotniteli-kryshek-matrits/",
+    "level": 1
+  },
+  {
+    "name": "Разъёмы",
+    "url": "/catalog/razyemy/",
+    "level": 1
+  },
+  {
+    "name": "Светодиодные подсветки и светодиоды для ремонта телевизоров",
+    "url": "/catalog/svetodiodnye-podsvetki-i-svetodiody-dlya-remonta-televizorov/",
+    "level": 1
+  },
+  {
+    "name": "Системы охлаждения",
+    "url": "/catalog/sistemy-okhlazhdeniya/",
+    "level": 1
+  },
+  {
+    "name": "Трекпады (тачпады)",
+    "url": "/catalog/trekpady-tachpady/",
+    "level": 1
+  },
+  {
+    "name": "Шлейфы",
+    "url": "/catalog/shleyfy/",
+    "level": 1
+  },
+  {
+    "name": "Запчасти для игровых приставок",
+    "url": "/catalog/zapchasti-dlya-igrovykh-pristavok/",
+    "level": 0
+  },
+  {
+    "name": "Защитные стекла и пленки",
+    "url": "/catalog/zashchitnye-stekla-i-plenki/",
+    "level": 0
+  },
+  {
+    "name": "Защитная пленка \"Гидрогелевая\"",
+    "url": "/catalog/zashchitnaya-plenka-gidrogelevaya/",
+    "level": 1
+  },
+  {
+    "name": "Защитная пленка \"Полное покрытие\"",
+    "url": "/catalog/zashchitnaya-plenka-polnoe-pokrytie/",
+    "level": 1
+  },
+  {
+    "name": "Защитные пленки для часов",
+    "url": "/catalog/zashchitnye-plenki-dlya-chasov/",
+    "level": 1
+  },
+  {
+    "name": "Защитные стекла \"Remax\"",
+    "url": "/catalog/zashchitnye-stekla-remax/",
+    "level": 1
+  },
+  {
+    "name": "Защитные стекла \"Supglass\"",
+    "url": "/catalog/zashchitnye-stekla-supglass/",
+    "level": 1
+  },
+  {
+    "name": "Защитные стекла \"UV комплект\" (упаковка, полное покрытие, клеится на UV клей из комплекта)",
+    "url": "/catalog/zashchitnye-stekla-uv-komplekt-upakovka-polnoe-pokrytie-kleitsya-na-uv-kley-iz-komplekta/",
+    "level": 1
+  },
+  {
+    "name": "Защитные стекла \"Антишпион\"",
+    "url": "/catalog/zashchitnye-stekla-antishpion/",
+    "level": 1
+  },
+  {
+    "name": "Защитные стекла \"Матовое\"",
+    "url": "/catalog/zashchitnye-stekla-matovoe/",
+    "level": 1
+  },
+  {
+    "name": "Защитные стекла \"Оптима\"",
+    "url": "/catalog/zashchitnye-stekla-optima/",
+    "level": 1
+  },
+  {
+    "name": "Защитные стекла \"Плоское\" (тех.упаковка)",
+    "url": "/catalog/zashchitnye-stekla-ploskoe-tekh-upakovka/",
+    "level": 1
+  },
+  {
+    "name": "Защитные стекла \"Полное покрытие\" (тех.упаковка, полное покрытие, клеится по всей площади)",
+    "url": "/catalog/zashchitnye-stekla-polnoe-pokrytie-tekh-upakovka-polnoe-pokrytie-kleitsya-po-vsey-ploshchadi/",
+    "level": 1
+  },
+  {
+    "name": "Защитные стекла \"Премиум\" (картонная упаковка, полное покрытие, клеится по всей площади)",
+    "url": "/catalog/zashchitnye-stekla-premium-kartonnaya-upakovka-polnoe-pokrytie-kleitsya-po-vsey-ploshchadi/",
+    "level": 1
+  },
+  {
+    "name": "Защитные стекла \"Стандарт\"",
+    "url": "/catalog/zashchitnye-stekla-standart/",
+    "level": 1
+  },
+  {
+    "name": "Защитные стекла для камеры",
+    "url": "/catalog/zashchitnye-stekla-dlya-kamery/",
+    "level": 1
+  },
+  {
+    "name": "Защитные стекла для часов",
+    "url": "/catalog/zashchitnye-stekla-dlya-chasov/",
+    "level": 1
+  },
+  {
+    "name": "Защитные стекла с сеткой динамика",
+    "url": "/catalog/zashchitnye-stekla-s-setkoy-dinamika/",
+    "level": 1
+  },
+  {
+    "name": "Карты памяти",
+    "url": "/catalog/karty-pamyati/",
+    "level": 0
+  },
+  {
+    "name": "USB-флеш",
+    "url": "/catalog/usb-flesh/",
+    "level": 1
+  },
+  {
+    "name": "Карта памяти MicroSD",
+    "url": "/catalog/karta-pamyati-microsd/",
+    "level": 1
+  },
+  {
+    "name": "Клавиатуры, мыши, геймпады",
+    "url": "/catalog/klaviatury-myshi-geympady/",
+    "level": 0
+  },
+  {
+    "name": "Корпусные части, рамки, скотч, толкатели и т.п.",
+    "url": "/catalog/korpusnye-chasti-ramki-skotch-tolkateli-i-t-p/",
+    "level": 0
+  },
+  {
+    "name": "Винты",
+    "url": "/catalog/vinty/",
+    "level": 1
+  },
+  {
+    "name": "Изоляционные и пылезащитные наклейки",
+    "url": "/catalog/izolyatsionnye-i-pylezashchitnye-nakleyki/",
+    "level": 1
+  },
+  {
+    "name": "Комплекты металлических пластин",
+    "url": "/catalog/komplekty-metallicheskikh-plastin/",
+    "level": 1
+  },
+  {
+    "name": "Контейнеры SIM",
+    "url": "/catalog/konteynery-sim/",
+    "level": 1
+  },
+  {
+    "name": "Рамки, Средние части",
+    "url": "/catalog/ramki-srednie-chasti/",
+    "level": 1
+  },
+  {
+    "name": "Сетки динамика",
+    "url": "/catalog/setki-dinamika/",
+    "level": 1
+  },
+  {
+    "name": "Скотчи двусторонние для сборки устройств",
+    "url": "/catalog/skotchi-dvustoronnie-dlya-sborki-ustroystv/",
+    "level": 1
+  },
+  {
+    "name": "Стекла камеры",
+    "url": "/catalog/stekla-kamery/",
+    "level": 1
+  },
+  {
+    "name": "Микросхемы, контроллеры, усилители и т.п.",
+    "url": "/catalog/mikroskhemy-kontrollery-usiliteli-i-t-p/",
+    "level": 0
+  },
+  {
+    "name": "Оборудование, инструменты, расходные материалы",
+    "url": "/catalog/oborudovanie-instrumenty-raskhodnye-materialy/",
+    "level": 0
+  },
+  {
+    "name": "Для пайки",
+    "url": "/catalog/dlya-payki/",
+    "level": 1
+  },
+  {
+    "name": "Инструменты",
+    "url": "/catalog/instrumenty/",
+    "level": 1
+  },
+  {
+    "name": "Оборудование для разделения дисплейных модулей",
+    "url": "/catalog/oborudovanie-dlya-razdeleniya-displeynykh-moduley/",
+    "level": 1
+  },
+  {
+    "name": "Расходные материалы",
+    "url": "/catalog/raskhodnye-materialy/",
+    "level": 1
+  },
+  {
+    "name": "Электрическое и измерительное оборудование",
+    "url": "/catalog/elektricheskoe-i-izmeritelnoe-oborudovanie/",
+    "level": 1
+  },
+  {
+    "name": "Стекла, тачскрины, поляризаторы, поляризационные и ОСА пленки",
+    "url": "/catalog/stekla-tachskriny-polyarizatory-polyarizatsionnye-i-osa-plenki/",
+    "level": 0
+  },
+  {
+    "name": "Поляризаторы дисплея",
+    "url": "/catalog/polyarizatory-displeya/",
+    "level": 1
+  },
+  {
+    "name": "Поляризационные и ОСА пленки",
+    "url": "/catalog/polyarizatsionnye-i-osa-plenki/",
+    "level": 1
+  },
+  {
+    "name": "Стекла для переклейки",
+    "url": "/catalog/stekla-dlya-perekleyki/",
+    "level": 1
+  },
+  {
+    "name": "Тачскрины",
+    "url": "/catalog/tachskriny/",
+    "level": 1
+  },
+  {
+    "name": "Шлейфы, платы",
+    "url": "/catalog/shleyfy-platy/",
+    "level": 0
+  },
+  {
+    "name": "Элементы питания и комплектующие к ним",
+    "url": "/catalog/elementy-pitaniya-i-komplektuyushchie-k-nim/",
+    "level": 0
+  }
+]

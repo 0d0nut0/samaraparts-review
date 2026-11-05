@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Подтверждение почты — ПАРТС{% endblock %}
+{% block content %}
+<div class="max-w-sm mx-auto sm:mt-6">
+    <h1 class="text-2xl font-extrabold tracking-tight">Подтверждение почты</h1>
+    {% if error %}<p class="mt-5 text-sm text-red-700 dark:text-red-300" role="alert">{{ error }}</p>{% endif %}
+    {% if pending %}
+        {% if sent %}
+        <div class="mt-5 card p-4" role="status">
+            <p class="font-semibold">Проверьте почту</p>
+            {% if generic %}<p class="hint mt-2">Запрос принят. Проверьте почту и папку «Спам». Если письмо не пришло, попробуйте повторить запрос позже.</p>
+            {% else %}<p class="hint mt-2">Письмо отправлено на {{ email }}. Откройте ссылку и подтвердите аккаунт.</p>{% endif %}
+            <p class="hint mt-2">Ссылка действует 24 часа. Проверьте также папку «Спам».</p>
+        </div>
+        {% else %}<p class="hint mt-3">Для входа в новый аккаунт нужно подтвердить e-mail.</p>{% endif %}
+    {% elif valid %}
+        <p class="hint mt-3">Нажмите кнопку, чтобы подтвердить адрес и завершить регистрацию.</p>
+        <form action="/auth/verify-email" method="post" class="mt-5">
+            <input type="hidden" name="token" value="{{ token }}">
+            <input type="hidden" name="next" value="{{ next or '' }}">
+            <button class="btn-primary w-full">Подтвердить e-mail</button>
+        </form>
+    {% else %}<p class="hint mt-3">Ссылка недействительна, устарела или уже использована. Запросите новое письмо.</p>{% endif %}
+    {% if not valid %}
+    <form action="/auth/resend-verification" method="post" class="mt-6 grid gap-3">
+        <input type="hidden" name="next" value="{{ next or '' }}">
+        <div><label class="label" for="email">E-mail</label><input class="field" type="email" name="email" id="email" required maxlength="254" autocomplete="email" value="{{ email or '' }}"></div>
+        <button class="btn-secondary w-full">Отправить письмо повторно</button>
+    </form>
+    {% endif %}
+    <p class="mt-5 text-sm"><a class="link" href="/auth/login{{ '?next=' ~ (next|urlencode) if next else '' }}">← Ко входу</a></p>
+</div>
+{% endblock %}

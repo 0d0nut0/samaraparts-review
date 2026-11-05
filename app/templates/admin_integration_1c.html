@@ -1,0 +1,40 @@
+{% extends "admin_base.html" %}
+{% import "admin_macros.html" as m with context %}
+{% block title %}Админ — Интеграция с 1С{% endblock %}
+{% block admin_content %}
+<h1 class="adm-h1 mb-2">Интеграция с 1С</h1>
+<p class="adm-muted mb-6">1С:Управление торговлей 11 → «Обмен с сайтами» (CommerceML). Инструкция — <code>docs/1C_INTEGRATION.md</code>.</p>
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    {{ m.stat("Обмен", "ВКЛЮЧЁН" if s.ONEC_EXCHANGE_ENABLED else "ВЫКЛЮЧЕН", "ONEC_EXCHANGE_ENABLED в .env") }}
+    {{ m.stat("Товары связаны с 1С", stats.products_linked ~ " / " ~ stats.products_total) }}
+    {{ m.stat("Заказы ждут выгрузки", stats.orders_pending) }}
+    {{ m.stat("Заказов передано в 1С", stats.orders_exported) }}
+</div>
+
+<div class="adm-card p-6 mb-6 text-sm space-y-2">
+    <h3 class="font-bold text-gray-900 dark:text-white mb-2">Параметры узла обмена в 1С</h3>
+    <div><span class="adm-muted">Адрес сайта:</span> <code class="font-mono">{{ exchange_url }}</code>
+        <span class="adm-muted">(для 1С из облака нужен публичный HTTPS-адрес, не localhost)</span></div>
+    <div><span class="adm-muted">Логин обмена:</span> <code>{{ s.ONEC_EXCHANGE_LOGIN or '— не задан —' }}</code></div>
+    <div><span class="adm-muted">Пароль обмена:</span> {{ 'задан' if s.ONEC_EXCHANGE_PASSWORD else '— не задан —' }}</div>
+    <div><span class="adm-muted">Вид закупочной цены из 1С:</span> «{{ s.ONEC_PRICE_TYPE_PURCHASE }}». Продажные цены рассчитывает сайт.</div>
+    <div><a class="link" href="/admin/integration-1c/prices.csv">Скачать Розницу, ОПТ и СуперОПТ для 1С</a></div>
+    <p>Обратная загрузка цен требует настройки на стороне 1С. Стандартный обмен CommerceML сам по себе её не выполняет.</p>
+    <div><span class="adm-muted">Склад по умолчанию:</span> {{ s.ONEC_DEFAULT_CITY_ID or 'не задан' }}</div>
+</div>
+
+<form method="post" action="/admin/integration-1c/warehouses" class="adm-card p-6 max-w-3xl">
+    <h3 class="font-bold text-gray-900 dark:text-white mb-1">Склады 1С → города сайта</h3>
+    <p class="adm-muted mb-4">Укажите «Ид» склада из выгрузки offers.xml. Если оставить пустым, склад сопоставится по совпадению названия города.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for c in cities %}
+        <div>
+            <label class="adm-label">{{ c.name }} (id {{ c.id }})</label>
+            <input class="adm-input font-mono" name="wh_{{ c.id }}" value="{{ c.onec_warehouse_id or '' }}" placeholder="Ид склада 1С">
+        </div>
+        {% endfor %}
+    </div>
+    <div class="mt-5"><button class="adm-btn" type="submit">Сохранить</button></div>
+</form>
+{% endblock %}

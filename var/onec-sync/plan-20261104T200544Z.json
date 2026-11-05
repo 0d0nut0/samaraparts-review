@@ -1,0 +1,27 @@
+{
+  "summary": {
+    "source_products": 7033,
+    "source_receipts": 1,
+    "purchase_costs": 324,
+    "ignored_purchase_documents": [],
+    "created": 0,
+    "linked_or_updated": 7033,
+    "costs_applied": 324,
+    "pricing": {
+      "needs_cost": 5489,
+      "moba": 1370,
+      "stale_moba": 5,
+      "estimated": 179
+    },
+    "priced_products": 1554,
+    "super_prices": 324,
+    "applied": true,
+    "changed_price_rows": 0,
+    "price_types": {
+      "retail": "15c54614-d825-11f1-a2af-00155d01c829",
+      "wholesale": "dcd845b7-d889-11f1-a2af-00155d01c829",
+      "super_wholesale": "dcd845b8-d889-11f1-a2af-00155d01c829"
+    }
+  },
+  "rows": []
+}

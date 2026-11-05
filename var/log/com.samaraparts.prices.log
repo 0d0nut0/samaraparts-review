@@ -1,0 +1,289 @@
+Аккумуляторы: pages=57, first=20
+pages=20
+pages=40
+Аккумуляторы: products=1134
+Аксессуары: pages=31, first=20
+pages=60
+pages=80
+Аксессуары: products=612
+Батарейки: pages=3, first=20
+Батарейки: products=46
+Дисплеи: pages=109, first=20
+pages=100
+pages=120
+pages=140
+pages=160
+pages=180
+pages=200
+Дисплеи: products=2178
+Задние крышки и корпуса: pages=68, first=20
+pages=220
+pages=240
+pages=260
+Задние крышки и корпуса: products=1345
+Запчасти: pages=41, first=20
+pages=280
+pages=300
+Запчасти: products=801
+Запчасти для ПК, ноутбуков и телевизоров: pages=69, first=20
+pages=320
+pages=340
+pages=360
+Запчасти для ПК, ноутбуков и телевизоров: products=1365
+Запчасти для игровых приставок: pages=5, first=20
+pages=380
+Запчасти для игровых приставок: products=82
+Защитные стекла и пленки: pages=55, first=20
+pages=400
+pages=420
+Защитные стекла и пленки: products=1081
+Карты памяти: pages=1, first=11
+Карты памяти: products=11
+pages=440
+Клавиатуры, мыши, геймпады: pages=1, first=18
+Клавиатуры, мыши, геймпады: products=18
+Корпусные части, рамки, скотч, толкатели и т.п.: pages=99, first=20
+pages=460
+pages=480
+pages=500
+pages=520
+Корпусные части, рамки, скотч, толкатели и т.п.: products=1968
+pages=540
+Микросхемы, контроллеры, усилители и т.п.: pages=7, first=20
+Микросхемы, контроллеры, усилители и т.п.: products=130
+Оборудование, инструменты, расходные материалы: pages=50, first=20
+pages=560
+pages=580
+Оборудование, инструменты, расходные материалы: products=985
+Стекла, тачскрины, поляризаторы, поляризационные и ОСА пленки: pages=15, first=20
+pages=600
+Стекла, тачскрины, поляризаторы, поляризационные и ОСА пленки: products=295
+Шлейфы, платы: pages=89, first=20
+pages=620
+pages=640
+pages=660
+pages=680
+pages=700
+Шлейфы, платы: products=1776
+Элементы питания и комплектующие к ним: pages=1, first=13
+Элементы питания и комплектующие к ним: products=13
+{"source": "https://moba.ru", "complete": true, "fetched_at": "2026-11-04T09:23:27.407972+00:00", "categories": 17, "pages": 701, "errors": []}
+products=13840 output=var/prices/moba-20261104T091506Z.json
+{"applied": true, "summary": {"needs_cost": 6095, "moba": 947, "stale_moba": 1}, "report": "var/prices/result-20261104T091506Z.json"}
+Аккумуляторы: pages=57, first=20
+Аккумуляторы: pages=57, first=20
+pages=20
+pages=40
+Аккумуляторы: products=1133
+Аксессуары: pages=31, first=20
+pages=60
+pages=80
+Аксессуары: products=610
+Батарейки: pages=3, first=20
+Батарейки: products=46
+Дисплеи: pages=109, first=20
+pages=100
+pages=120
+pages=140
+pages=160
+pages=180
+pages=200
+Дисплеи: products=2174
+Задние крышки и корпуса: pages=68, first=20
+pages=220
+pages=240
+pages=260
+Задние крышки и корпуса: products=1346
+Запчасти: pages=41, first=20
+pages=280
+pages=300
+Запчасти: products=802
+Запчасти для ПК, ноутбуков и телевизоров: pages=69, first=20
+pages=320
+pages=340
+pages=360
+Запчасти для ПК, ноутбуков и телевизоров: products=1364
+Запчасти для игровых приставок: pages=5, first=20
+pages=380
+Запчасти для игровых приставок: products=82
+Защитные стекла и пленки: pages=55, first=20
+pages=400
+pages=420
+Защитные стекла и пленки: products=1085
+Карты памяти: pages=1, first=11
+Карты памяти: products=11
+pages=440
+Клавиатуры, мыши, геймпады: pages=1, first=18
+Клавиатуры, мыши, геймпады: products=18
+Корпусные части, рамки, скотч, толкатели и т.п.: pages=99, first=20
+pages=460
+pages=480
+pages=500
+pages=520
+Корпусные части, рамки, скотч, толкатели и т.п.: products=1971
+pages=540
+Микросхемы, контроллеры, усилители и т.п.: pages=7, first=20
+Микросхемы, контроллеры, усилители и т.п.: products=130
+Оборудование, инструменты, расходные материалы: pages=50, first=20
+pages=560
+pages=580
+Оборудование, инструменты, расходные материалы: products=984
+Стекла, тачскрины, поляризаторы, поляризационные и ОСА пленки: pages=15, first=20
+pages=600
+Стекла, тачскрины, поляризаторы, поляризационные и ОСА пленки: products=294
+Шлейфы, платы: pages=89, first=20
+pages=620
+pages=640
+pages=660
+pages=680
+pages=700
+Шлейфы, платы: products=1776
+Элементы питания и комплектующие к ним: pages=1, first=13
+Элементы питания и комплектующие к ним: products=13
+{"source": "https://moba.ru", "complete": true, "fetched_at": "2026-11-04T13:37:54.001053+00:00", "categories": 17, "pages": 701, "errors": []}
+products=13839 output=var/prices/moba-20261104T133129Z.json
+{"applied": true, "summary": {"needs_cost": 6095, "moba": 946, "stale_moba": 2}, "report": "var/prices/result-20261104T133129Z.json"}
+Аккумуляторы: pages=57, first=20
+pages=20
+pages=40
+Аккумуляторы: products=1127
+Аксессуары: pages=31, first=20
+pages=60
+pages=80
+Аксессуары: products=608
+Батарейки: pages=3, first=20
+Батарейки: products=46
+Дисплеи: pages=109, first=20
+pages=100
+pages=120
+pages=140
+pages=160
+pages=180
+pages=200
+Дисплеи: products=2172
+Задние крышки и корпуса: pages=68, first=20
+pages=220
+pages=240
+pages=260
+Задние крышки и корпуса: products=1345
+Запчасти: pages=41, first=20
+pages=280
+pages=300
+Запчасти: products=802
+Запчасти для ПК, ноутбуков и телевизоров: pages=69, first=20
+pages=320
+pages=340
+pages=360
+Запчасти для ПК, ноутбуков и телевизоров: products=1363
+Запчасти для игровых приставок: pages=5, first=20
+pages=380
+Запчасти для игровых приставок: products=82
+Защитные стекла и пленки: pages=55, first=20
+pages=400
+pages=420
+Защитные стекла и пленки: products=1084
+Карты памяти: pages=1, first=11
+Карты памяти: products=11
+pages=440
+Клавиатуры, мыши, геймпады: pages=1, first=18
+Клавиатуры, мыши, геймпады: products=18
+Корпусные части, рамки, скотч, толкатели и т.п.: pages=99, first=20
+pages=460
+pages=480
+pages=500
+pages=520
+Корпусные части, рамки, скотч, толкатели и т.п.: products=1971
+pages=540
+Микросхемы, контроллеры, усилители и т.п.: pages=7, first=20
+Микросхемы, контроллеры, усилители и т.п.: products=130
+Оборудование, инструменты, расходные материалы: pages=50, first=20
+pages=560
+pages=580
+Оборудование, инструменты, расходные материалы: products=984
+Стекла, тачскрины, поляризаторы, поляризационные и ОСА пленки: pages=15, first=20
+pages=600
+Стекла, тачскрины, поляризаторы, поляризационные и ОСА пленки: products=294
+Шлейфы, платы: pages=89, first=20
+pages=620
+pages=640
+pages=660
+pages=680
+pages=700
+Шлейфы, платы: products=1775
+Элементы питания и комплектующие к ним: pages=1, first=13
+Элементы питания и комплектующие к ним: products=13
+{"source": "https://moba.ru", "complete": true, "fetched_at": "2026-11-04T17:23:53.682737+00:00", "categories": 17, "pages": 701, "errors": []}
+products=13825 output=var/prices/moba-20261104T171804Z.json
+{"applied": true, "summary": {"needs_cost": 6095, "moba": 943, "stale_moba": 5}, "report": "var/prices/result-20261104T171804Z.json"}
+Аккумуляторы: pages=57, first=20
+pages=20
+pages=40
+Аккумуляторы: products=1127
+Аксессуары: pages=31, first=20
+pages=60
+pages=80
+Аксессуары: products=609
+Батарейки: pages=3, first=20
+Батарейки: products=46
+Дисплеи: pages=109, first=20
+pages=100
+pages=120
+pages=140
+pages=160
+pages=180
+pages=200
+Дисплеи: products=2171
+Задние крышки и корпуса: pages=68, first=20
+pages=220
+pages=240
+pages=260
+Задние крышки и корпуса: products=1346
+Запчасти: pages=41, first=20
+pages=280
+pages=300
+Запчасти: products=805
+Запчасти для ПК, ноутбуков и телевизоров: pages=69, first=20
+pages=320
+pages=340
+pages=360
+Запчасти для ПК, ноутбуков и телевизоров: products=1364
+Запчасти для игровых приставок: pages=5, first=20
+pages=380
+Запчасти для игровых приставок: products=81
+Защитные стекла и пленки: pages=55, first=20
+pages=400
+pages=420
+Защитные стекла и пленки: products=1087
+Карты памяти: pages=1, first=11
+Карты памяти: products=11
+pages=440
+Клавиатуры, мыши, геймпады: pages=1, first=18
+Клавиатуры, мыши, геймпады: products=18
+Корпусные части, рамки, скотч, толкатели и т.п.: pages=99, first=20
+pages=460
+pages=480
+pages=500
+pages=520
+Корпусные части, рамки, скотч, толкатели и т.п.: products=1973
+pages=540
+Микросхемы, контроллеры, усилители и т.п.: pages=7, first=20
+Микросхемы, контроллеры, усилители и т.п.: products=130
+Оборудование, инструменты, расходные материалы: pages=50, first=20
+pages=560
+pages=580
+Оборудование, инструменты, расходные материалы: products=988
+Стекла, тачскрины, поляризаторы, поляризационные и ОСА пленки: pages=15, first=20
+pages=600
+Стекла, тачскрины, поляризаторы, поляризационные и ОСА пленки: products=294
+Шлейфы, платы: pages=89, first=20
+pages=620
+pages=640
+pages=660
+pages=680
+pages=700
+Шлейфы, платы: products=1772
+Элементы питания и комплектующие к ним: pages=1, first=13
+Элементы питания и комплектующие к ним: products=13
+{"source": "https://moba.ru", "complete": true, "fetched_at": "2026-11-05T05:20:37.559594+00:00", "categories": 17, "pages": 701, "errors": []}
+products=13835 output=var/prices/moba-20261105T051506Z.json
+{"applied": true, "summary": {"needs_cost": 5484, "moba": 1368, "stale_moba": 2, "estimated": 179}, "report": "var/prices/result-20261105T051506Z.json"}

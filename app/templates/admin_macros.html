@@ -1,0 +1,36 @@
+{# Общие макросы админ-панели #}
+
+{% macro pagination(page, pages, params='') %}
+{% if pages > 1 %}
+<div class="flex items-center justify-center gap-2 mt-6 text-sm">
+    {% if page > 1 %}<a class="adm-btn-ghost" href="?page={{ page - 1 }}{{ params }}">← Назад</a>{% endif %}
+    <span class="adm-muted font-mono px-2">{{ page }} / {{ pages }}</span>
+    {% if page < pages %}<a class="adm-btn-ghost" href="?page={{ page + 1 }}{{ params }}">Вперёд →</a>{% endif %}
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro money(value) -%}
+{%- set v = value or 0 -%}
+{%- if v == v|round(0, 'floor') -%}
+{{ "{:,.0f}".format(v).replace(",", " ") }} ₽
+{%- else -%}
+{{ "{:,.2f}".format(v).replace(",", " ").replace(".", ",") }} ₽
+{%- endif -%}
+{%- endmacro %}
+
+{% macro money0(value) -%}
+{{ "{:,.0f}".format(value or 0).replace(",", " ") }} ₽
+{%- endmacro %}
+
+{% macro stat(title, value, hint='', accent='purple') %}
+<div class="adm-card p-5">
+    <div class="adm-muted uppercase tracking-wider font-semibold mb-1.5">{{ title }}</div>
+    <div class="adm-stat">{{ value }}</div>
+    {% if hint %}<div class="adm-muted mt-1">{{ hint }}</div>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro order_badge(status) %}
+<span class="adm-badge {{ status_classes[status.name] }}">{{ status_labels[status.name] }}</span>
+{% endmacro %}

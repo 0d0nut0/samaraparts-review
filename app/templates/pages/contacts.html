@@ -1,0 +1,30 @@
+{% extends "pages/_layout.html" %}
+{% block page_body %}
+<div class="grid sm:grid-cols-2 gap-4">
+    {% for branch in shop.branches %}
+    <div class="rounded-xl bg-paper dark:bg-night p-5">
+        <div class="flex items-center justify-between gap-2 mb-3"><h2 class="!mt-0 !mb-0">{{ branch.name }}</h2>{% if branch.coming_soon %}<span class="branch-soon">Скоро открытие</span>{% endif %}</div>
+        {% if branch.phone %}<a href="{{ branch.phone_href }}" class="text-xl font-extrabold tabular-nums">{{ branch.phone }}</a>
+        {% elif branch.coming_soon %}<p class="hint">Телефон появится к открытию.</p>{% endif %}
+        {% if branch.address %}<p class="text-sm mt-3">{{ branch.address }}</p>{% endif %}
+        {% if branch.hours %}<p class="hint mt-1">{{ branch.hours }}</p>{% endif %}
+        {% if not branch.coming_soon %}<p class="hint mt-2">Заказы, наличие и самовывоз. Адрес и время получения сообщит менеджер.</p>{% endif %}
+    </div>
+    {% endfor %}
+    {% if shop.email %}
+    <div class="rounded-xl bg-paper dark:bg-night p-5">
+        <div class="hint mb-1">E-mail</div>
+        <a href="mailto:{{ shop.email }}" class="text-lg font-bold">{{ shop.email }}</a>
+    </div>
+    {% endif %}
+</div>
+
+<h2>Реквизиты продавца</h2>
+<dl class="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
+    <dt class="text-muted dark:text-night-muted">Продавец</dt><dd class="font-medium text-ink dark:text-night-text">{{ shop.seller }}</dd>
+    <dt class="text-muted dark:text-night-muted">ИНН</dt><dd class="font-mono">{{ shop.inn }}</dd>
+    <dt class="text-muted dark:text-night-muted">ОГРНИП</dt><dd class="font-mono">{{ shop.ogrnip }}</dd>
+</dl>
+<p class="text-sm text-muted dark:text-night-muted">Юридическим лицам и ИП выставляем счёт на оплату — банковские реквизиты будут в счёте.
+Для запроса счёта позвоните по телефону выше.</p>
+{% endblock %}

@@ -1,0 +1,19 @@
+1C source fetched 7033 products, 1 receipts
+Traceback (most recent call last):
+  File "/Users/danil/PycharmProjects/PartsBot_New/run_onec_sync.py", line 175, in <module>
+    main()
+  File "/Users/danil/PycharmProjects/PartsBot_New/run_onec_sync.py", line 163, in main
+    report['documents'] = return_prices(client, rows, rub=source['rub'], folder=folder,
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danil/PycharmProjects/PartsBot_New/run_onec_sync.py", line 89, in return_prices
+    existing = client.rows(PRICE_DOC, {'$filter': f"Комментарий eq '{comment}' and DeletionMark eq false"})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danil/PycharmProjects/PartsBot_New/app/services/onec_odata.py", line 65, in rows
+    page = self.get(resource, {**(params or {}), '$top': 1000, '$skip': skip}).get('value', [])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danil/PycharmProjects/PartsBot_New/app/services/onec_odata.py", line 55, in get
+    response.raise_for_status()
+  File "/Users/danil/PycharmProjects/PartsBot_New/.venv/lib/python3.12/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Server error '500 Internal server error' for url 'https://v12.arenda-it.com/efd8bqtl/odata/standard.odata/Document_%D0%A3%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0%D0%A6%D0%B5%D0%BD%D0%9D%D0%BE%D0%BC%D0%B5%D0%BD%D0%BA%D0%BB%D0%B0%D1%82%D1%83%D1%80%D1%8B?$format=json&$filter=%D0%9A%D0%BE%D0%BC%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%80%D0%B8%D0%B9%20eq%20%27PARTS%20sync%2085f7232c317f3015c9fa262c%27%20and%20DeletionMark%20eq%20false&$top=1000&$skip=0'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500

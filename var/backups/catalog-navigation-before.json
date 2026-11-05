@@ -1,0 +1,332 @@
+[
+  {
+    "id": 1,
+    "name": "Запчасти для телефонов и планшетов",
+    "parent_id": null
+  },
+  {
+    "id": 2,
+    "name": "Аксессуары",
+    "parent_id": null
+  },
+  {
+    "id": 3,
+    "name": "Запчасти для ПК, ноутбуков, ТВ и консолей",
+    "parent_id": null
+  },
+  {
+    "id": 4,
+    "name": "Защита и память",
+    "parent_id": null
+  },
+  {
+    "id": 5,
+    "name": "Оборудование и инструменты",
+    "parent_id": null
+  },
+  {
+    "id": 6,
+    "name": "Элементы питания",
+    "parent_id": null
+  },
+  {
+    "id": 7,
+    "name": "Наименование",
+    "parent_id": null
+  },
+  {
+    "id": 8,
+    "name": "Жидкость",
+    "parent_id": null
+  },
+  {
+    "id": 9,
+    "name": "Кабель",
+    "parent_id": null
+  },
+  {
+    "id": 10,
+    "name": "Автомобильное",
+    "parent_id": null
+  },
+  {
+    "id": 11,
+    "name": "Аккумулятор",
+    "parent_id": null
+  },
+  {
+    "id": 12,
+    "name": "Аккумуляторы",
+    "parent_id": null
+  },
+  {
+    "id": 13,
+    "name": "Антенна",
+    "parent_id": null
+  },
+  {
+    "id": 14,
+    "name": "Беспроводное",
+    "parent_id": null
+  },
+  {
+    "id": 15,
+    "name": "Беспроводные",
+    "parent_id": null
+  },
+  {
+    "id": 16,
+    "name": "Блок",
+    "parent_id": null
+  },
+  {
+    "id": 17,
+    "name": "Вибромотор",
+    "parent_id": null
+  },
+  {
+    "id": 18,
+    "name": "Винт",
+    "parent_id": null
+  },
+  {
+    "id": 19,
+    "name": "Винты",
+    "parent_id": null
+  },
+  {
+    "id": 20,
+    "name": "Внешний",
+    "parent_id": null
+  },
+  {
+    "id": 21,
+    "name": "Гарнитура",
+    "parent_id": null
+  },
+  {
+    "id": 22,
+    "name": "Гель",
+    "parent_id": null
+  },
+  {
+    "id": 23,
+    "name": "Гидрогелевая",
+    "parent_id": null
+  },
+  {
+    "id": 24,
+    "name": "Держатель",
+    "parent_id": null
+  },
+  {
+    "id": 25,
+    "name": "Динамик",
+    "parent_id": null
+  },
+  {
+    "id": 26,
+    "name": "Дисплей",
+    "parent_id": null
+  },
+  {
+    "id": 27,
+    "name": "Дисплейный",
+    "parent_id": null
+  },
+  {
+    "id": 28,
+    "name": "Задняя",
+    "parent_id": null
+  },
+  {
+    "id": 29,
+    "name": "Защитное",
+    "parent_id": null
+  },
+  {
+    "id": 30,
+    "name": "Звонок",
+    "parent_id": null
+  },
+  {
+    "id": 31,
+    "name": "Изопропанол",
+    "parent_id": null
+  },
+  {
+    "id": 32,
+    "name": "Камера",
+    "parent_id": null
+  },
+  {
+    "id": 33,
+    "name": "Клей",
+    "parent_id": null
+  },
+  {
+    "id": 34,
+    "name": "Колонка",
+    "parent_id": null
+  },
+  {
+    "id": 35,
+    "name": "Кольцо",
+    "parent_id": null
+  },
+  {
+    "id": 36,
+    "name": "Комплект",
+    "parent_id": null
+  },
+  {
+    "id": 37,
+    "name": "Коннектор",
+    "parent_id": null
+  },
+  {
+    "id": 38,
+    "name": "Контейнер",
+    "parent_id": null
+  },
+  {
+    "id": 39,
+    "name": "Корпус",
+    "parent_id": null
+  },
+  {
+    "id": 40,
+    "name": "Крышка",
+    "parent_id": null
+  },
+  {
+    "id": 41,
+    "name": "Левый",
+    "parent_id": null
+  },
+  {
+    "id": 42,
+    "name": "Матрица",
+    "parent_id": null
+  },
+  {
+    "id": 43,
+    "name": "Микросхемаконтроллер",
+    "parent_id": null
+  },
+  {
+    "id": 44,
+    "name": "Набор",
+    "parent_id": null
+  },
+  {
+    "id": 45,
+    "name": "Направляющие",
+    "parent_id": null
+  },
+  {
+    "id": 46,
+    "name": "Наушники",
+    "parent_id": null
+  },
+  {
+    "id": 47,
+    "name": "Органайзер",
+    "parent_id": null
+  },
+  {
+    "id": 48,
+    "name": "Переходник",
+    "parent_id": null
+  },
+  {
+    "id": 49,
+    "name": "Пленка",
+    "parent_id": null
+  },
+  {
+    "id": 50,
+    "name": "Правый",
+    "parent_id": null
+  },
+  {
+    "id": 51,
+    "name": "Разъем",
+    "parent_id": null
+  },
+  {
+    "id": 52,
+    "name": "Рамка",
+    "parent_id": null
+  },
+  {
+    "id": 53,
+    "name": "Растворитель",
+    "parent_id": null
+  },
+  {
+    "id": 54,
+    "name": "Сетевое",
+    "parent_id": null
+  },
+  {
+    "id": 55,
+    "name": "Сетка",
+    "parent_id": null
+  },
+  {
+    "id": 56,
+    "name": "Скотч",
+    "parent_id": null
+  },
+  {
+    "id": 57,
+    "name": "Спрейохладитель",
+    "parent_id": null
+  },
+  {
+    "id": 58,
+    "name": "Спрейочиститель",
+    "parent_id": null
+  },
+  {
+    "id": 59,
+    "name": "Спрейпылеудалитель",
+    "parent_id": null
+  },
+  {
+    "id": 60,
+    "name": "Средняя",
+    "parent_id": null
+  },
+  {
+    "id": 61,
+    "name": "Стекло",
+    "parent_id": null
+  },
+  {
+    "id": 62,
+    "name": "Тачскрин",
+    "parent_id": null
+  },
+  {
+    "id": 63,
+    "name": "Чехол",
+    "parent_id": null
+  },
+  {
+    "id": 64,
+    "name": "Шлейф",
+    "parent_id": null
+  },
+  {
+    "id": 65,
+    "name": "Шлейфплата",
+    "parent_id": null
+  },
+  {
+    "id": 66,
+    "name": "Ячейка",
+    "parent_id": null
+  }
+]

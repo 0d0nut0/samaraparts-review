@@ -1,0 +1,22 @@
+{
+  "fingerprint": "7b4dffc1e5d84d8f782b23c8dc153adad6f84b55c88d1fcfccea2a3090a51b16",
+  "completed_at": "2026-11-04T20:29:46.739359+00:00",
+  "summary": {
+    "source_products": 7033,
+    "source_receipts": 1,
+    "purchase_costs": 324,
+    "ignored_purchase_documents": [],
+    "source_unchanged": true,
+    "priced_products": 1554,
+    "super_prices": 324,
+    "applied": true,
+    "changed_price_rows": 0,
+    "price_types": {
+      "retail": "15c54614-d825-11f1-a2af-00155d01c829",
+      "wholesale": "dcd845b7-d889-11f1-a2af-00155d01c829",
+      "super_wholesale": "dcd845b8-d889-11f1-a2af-00155d01c829"
+    },
+    "documents": [],
+    "verified": true
+  }
+}

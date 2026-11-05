@@ -1,0 +1,19 @@
+@	IN SOA ns1.spaceweb.ru.  dns1.sweb.ru.  (
+		2026110319
+		8H
+		2H
+		2W
+		10m
+) 
+		NS	ns1.spaceweb.ru.
+		NS	ns2.spaceweb.ru.
+		NS	ns3.spaceweb.pro.
+		NS	ns4.spaceweb.pro.
+		MX	10	mx1.spaceweb.ru.
+		MX	20	mx2.spaceweb.ru.
+		A	77.222.40.35
+www		A	77.222.40.35
+@	600	IN	TXT	"v=spf1 include:_spf.spaceweb.ru ~all"
+autodiscover		CNAME	autodiscover.spaceweb.ru.
+autoconfig		CNAME	autoconfig.spaceweb.ru.
+_autodiscover._tcp 86400 IN SRV 5 0 443 autodiscover.spaceweb.ru.

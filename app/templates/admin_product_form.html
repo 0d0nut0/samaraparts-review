@@ -1,0 +1,126 @@
+{% extends "admin_base.html" %}
+{% import "admin_macros.html" as m with context %}
+{% block title %}Админ — {{ product.name if product else 'Новый товар' }}{% endblock %}
+{% block admin_content %}
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <h1 class="adm-h1">{{ product.name if product else 'Новый товар' }}</h1>
+    <a href="/admin/products" class="adm-btn-ghost">← К товарам</a>
+</div>
+
+{% set base = mp.our_base if mp else (product.price_base if product else none) %}
+{% set opt = mp.our_opt if mp else (product.price_opt if product else none) %}
+{% set card = mp.our_card if mp else (product.price_card if product else none) %}
+
+<form method="post" action="{{ '/admin/products/' ~ product.id if product else '/admin/products/new' }}" class="adm-card p-6 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+            <label class="adm-label">Артикул (SKU)</label>
+            {% if product %}
+            <input class="adm-input font-mono" value="{{ product.sku }}" disabled>
+            {% else %}
+            <input class="adm-input font-mono" name="sku" required maxlength="100">
+            {% endif %}
+        </div>
+        <div>
+            <label class="adm-label">Название</label>
+            <input class="adm-input" name="name" required maxlength="500" value="{{ product.name if product else '' }}">
+        </div>
+        <div>
+            <label class="adm-label">Категория</label>
+            <select class="adm-input" name="category_id" required>
+                {% for c in categories %}
+                <option value="{{ c.id }}" {% if product and product.category_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="adm-label">Поставщик</label>
+            <select class="adm-input" name="supplier_id">
+                <option value="">— не указан —</option>
+                {% for s in suppliers %}
+                <option value="{{ s.id }}" {% if product and product.supplier_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="adm-label">Розница, ₽ (расчётная)</label>
+            <input class="adm-input font-mono" name="price_base" readonly inputmode="decimal" value="{{ base if base is not none else '' }}">
+        </div>
+        <div>
+            <label class="adm-label">ОПТ / обычная цена Moba, ₽</label>
+            <input class="adm-input font-mono" name="price_opt" required inputmode="decimal" value="{{ opt if opt is not none else '' }}" placeholder="Цена Moba">
+        </div>
+        <div><label class="adm-label">СуперОПТ, ₽ (расчётная)</label>
+            <input class="adm-input" readonly value="{{ mp.our_super_opt if mp and mp.our_super_opt is not none else 'Нужна закупочная цена' }}">
+        </div>
+        <div>
+            <label class="adm-label">Себестоимость (закупка), ₽</label>
+            <input class="adm-input font-mono" name="purchase_price" inputmode="decimal" value="{{ product.purchase_price if product and product.purchase_price is not none else '' }}">
+        </div>
+        <div>
+            <label class="adm-label">Порог низкого остатка, шт.</label>
+            <input class="adm-input font-mono" name="critical_stock_threshold" type="number" min="0" value="{{ product.critical_stock_threshold if product else 5 }}">
+        </div>
+        <div class="md:col-span-2">
+            <label class="adm-label">Описание</label>
+            <textarea class="adm-input" name="description" rows="3">{{ product.description if product and product.description else '' }}</textarea>
+        </div>
+    </div>
+
+    {% if product %}
+    <h3 class="font-bold text-gray-900 dark:text-white mt-6 mb-3">Остатки по складам</h3>
+    <p class="adm-muted mb-3">Ручная корректировка записывается в журнал движения. Для поступлений используйте «Приход товара».</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {% for c in cities %}
+        <div>
+            <label class="adm-label">{{ c.name }}</label>
+            <input class="adm-input font-mono" type="number" min="0" name="stock_{{ c.id }}" value="{{ stocks.get(c.id, 0) }}">
+        </div>
+        {% endfor %}
+    </div>
+    {% if base is not none and product.purchase_price %}
+    <p class="adm-muted mt-4">Маржа: {{ "%.1f"|format((base - product.purchase_price) / base * 100) if base > 0 else 0 }}%</p>
+    {% endif %}
+    <p class="adm-muted mt-2">Внимание: «Пересчитать цены» в настройках перезапишет розничную, оптовую и карточную цены по коэффициентам.</p>
+    {% endif %}
+
+    <div class="mt-6 flex gap-3">
+        <button class="adm-btn" type="submit">{{ 'Сохранить' if product else 'Создать товар' }}</button>
+        {% if product %}
+        <a class="adm-btn-ghost" href="/admin/products/receive?article={{ product.sku|urlencode }}">Приход</a>
+        <a class="adm-btn-ghost" href="/admin/products/writeoff?article={{ product.sku|urlencode }}">Списание</a>
+        <a class="adm-btn-ghost" href="/catalog/{{ product.sku|urlencode }}" target="_blank">На сайте ↗</a>
+        {% endif %}
+    </div>
+</form>
+
+{% if product %}
+<form method="post" action="/admin/products/{{ product.id }}/toggle" class="mb-6">
+    {% if product.is_active %}
+    <button class="adm-btn-danger" type="submit" onclick="return confirm('Скрыть товар из каталога?')">Скрыть из каталога</button>
+    {% else %}
+    <button class="adm-btn" type="submit">Вернуть в каталог</button>
+    {% endif %}
+</form>
+
+<div class="adm-card overflow-x-auto">
+    <h3 class="px-4 pt-4 pb-2 font-bold text-gray-900 dark:text-white">История движения (последние 20)</h3>
+    <table class="w-full">
+        <thead><tr><th class="adm-th">Дата</th><th class="adm-th">Операция</th><th class="adm-th">Кол-во</th><th class="adm-th">Детали</th><th class="adm-th">Сотрудник</th></tr></thead>
+        <tbody>
+        {% for t in history %}
+        <tr>
+            <td class="adm-td font-mono text-xs">{{ t.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+            <td class="adm-td">{{ transaction_labels[t.type.name] }}</td>
+            <td class="adm-td font-mono font-bold {% if t.quantity > 0 %}text-green-600{% else %}text-red-600{% endif %}">{% if t.quantity > 0 %}+{% endif %}{{ t.quantity }}</td>
+            <td class="adm-td adm-muted">{{ t.notes or '' }}{% if t.supplier %} · {{ t.supplier.name }}{% endif %}{% if t.unit_cost %} · {{ m.money(t.unit_cost) }}/шт{% endif %}</td>
+            <td class="adm-td">{{ t.user.username if t.user else '—' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="adm-td text-center adm-muted">Движений нет</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

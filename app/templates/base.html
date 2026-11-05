@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ПАРТС{% endblock %}</title>
+    <meta name="description" content="{% block description %}Запчасти и комплектующие для ремонта телефонов, планшетов, ноутбуков и консолей в {{ shop.cities_in }}: дисплеи, аккумуляторы, шлейфы, стёкла. Наличие на складе, розница и опт.{% endblock %}">
+    <meta name="robots" content="{% block robots %}{{ seo.robots(request) }}{% endblock %}">
+    <link rel="canonical" href="{% block canonical %}{{ seo.canonical(request) }}{% endblock %}">
+    <meta property="og:site_name" content="ПАРТС">
+    <meta property="og:locale" content="ru_RU">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:title" content="{{ self.title() }}">
+    <meta property="og:description" content="{{ self.description() }}">
+    <meta property="og:url" content="{{ self.canonical() }}">
+    {% block og_image %}<meta property="og:image" content="{{ seo.absolute('/static/og.png') }}">{% endblock %}
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#173D30">
+    {% block head %}{% endblock %}
+    <script>
+        // Тема до отрисовки, чтобы не мигало: сохранённая или системная
+        (function () {
+            try {
+                const t = localStorage.getItem('theme');
+                if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
+            } catch (e) {}
+        })();
+    </script>
+    <link rel="stylesheet" href="/static/fonts/fonts.css">
+    <script src="/static/vendor/tailwind.js"></script>
+    <script src="/static/vendor/htmx.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        // Палитра зелёного логотипа ПАРТС
+                        ink: '#173D30',
+                        paper: '#F3F7F3',
+                        line: '#DCE7DF',
+                        muted: '#65786D',
+                        signal: { DEFAULT: '#B9EF77', hover: '#A9DF66' },
+                        ok: '#0A7851',
+                        night: { DEFAULT: '#091C14', surface: '#11291E', line: '#264637', text: '#E8F4EB', muted: '#A0BAAB' },
+                        // Совместимость всех форм и административных страниц с палитрой бренда
+                        purple: {
+                            50: '#F0F9F2', 100: '#DCF0E1', 200: '#B9DFCA', 300: '#8CC9A9', 400: '#67BD92',
+                            500: '#24825B', 600: '#00613F', 700: '#005038', 800: '#06412F', 900: '#053422',
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['Onest', 'system-ui', 'sans-serif'],
+                        mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+            body { @apply bg-paper text-ink dark:bg-night dark:text-night-text font-sans antialiased; font-feature-settings: "tnum" 1; }
+            :focus-visible { @apply outline-none ring-2 ring-purple-500 ring-offset-2 ring-offset-paper dark:ring-offset-night; }
+            ::selection { @apply bg-signal text-ink; }
+        }
+        @layer components {
+            .card { @apply bg-white dark:bg-night-surface border border-line dark:border-night-line rounded-2xl; }
+            .field { @apply w-full bg-white dark:bg-night border border-line dark:border-night-line text-ink dark:text-night-text rounded-lg px-3.5 py-2.5 text-[15px] placeholder:text-muted/70 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition; }
+            .label { @apply block text-sm font-medium text-ink dark:text-night-text mb-1.5; }
+            .hint { @apply text-[13px] text-muted dark:text-night-muted; }
+            .btn { @apply inline-flex items-center justify-center gap-2 h-11 px-5 rounded-xl text-[15px] font-semibold transition select-none disabled:opacity-50 disabled:cursor-not-allowed; }
+            .btn-primary { @apply btn bg-purple-700 text-white hover:bg-purple-600 active:translate-y-px; }
+            .btn-secondary { @apply btn bg-white dark:bg-night-surface border border-line dark:border-night-line text-ink dark:text-night-text hover:border-ink dark:hover:border-night-muted; }
+            .btn-quiet { @apply btn h-9 px-3 text-sm text-muted dark:text-night-muted hover:text-ink dark:hover:text-night-text; }
+            .sku { @apply font-mono text-[12px] text-muted dark:text-night-muted; }
+            .price { @apply font-bold tabular-nums text-ink dark:text-night-text; }
+            .link { @apply text-purple-600 dark:text-purple-400 hover:underline underline-offset-2; }
+            .stock-ok { @apply text-ok dark:text-emerald-400; }
+            .stock-no { @apply text-muted dark:text-night-muted; }
+            .chip { @apply inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-sm border border-line dark:border-night-line bg-white dark:bg-night-surface text-ink dark:text-night-text hover:border-ink dark:hover:border-night-muted transition whitespace-nowrap; }
+            .chip-on { @apply chip bg-ink text-white border-ink dark:bg-night-text dark:text-night dark:border-night-text; }
+
+            /* Классы прежней темы — оставлены как алиасы, чтобы админка и формы приняли новый стиль */
+            .glass-card, .glass-panel { @apply card; }
+            .glass-sub { @apply bg-paper dark:bg-night border border-line dark:border-night-line; }
+            .glass-input { @apply field; }
+            .glass-header { @apply bg-white dark:bg-night-surface border-b border-line dark:border-night-line; }
+            .btn-glass { @apply bg-signal text-ink hover:bg-signal-hover font-semibold; }
+            .text-glow { @apply text-ink dark:text-night-text; }
+
+            /* Админ-панель */
+            .adm-h1 { @apply text-2xl sm:text-3xl font-bold text-ink dark:text-night-text tracking-tight; }
+            .adm-card { @apply card; }
+            .adm-th { @apply px-4 py-3 text-left text-[13px] font-semibold text-muted dark:text-night-muted border-b border-line dark:border-night-line whitespace-nowrap; }
+            .adm-td { @apply px-4 py-3 text-sm text-ink dark:text-night-text border-b border-line/60 dark:border-night-line/60 align-top; }
+            .adm-label { @apply label text-[13px]; }
+            .adm-input { @apply field py-2 text-sm; }
+            .adm-btn { @apply btn h-10 px-4 text-sm bg-ink text-white hover:bg-ink/90 dark:bg-night-text dark:text-night; }
+            .adm-btn-ghost { @apply btn h-10 px-4 text-sm bg-white dark:bg-night-surface border border-line dark:border-night-line text-ink dark:text-night-text hover:border-ink; }
+            .adm-btn-danger { @apply btn h-10 px-4 text-sm border border-red-500/50 text-red-600 dark:text-red-400 hover:bg-red-500/10; }
+            .adm-stat { @apply text-lg xl:text-xl font-bold tabular-nums text-ink dark:text-night-text whitespace-nowrap; }
+            .adm-muted { @apply text-xs text-muted dark:text-night-muted; }
+            .adm-badge { @apply inline-block px-2 py-0.5 text-[12px] rounded-md font-medium border whitespace-nowrap; }
+        }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+    </style>
+    <link rel="stylesheet" href="/static/brand.css">
+</head>
+<body class="min-h-screen flex flex-col">
+<a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-2 focus:px-4 focus:py-2 focus:bg-signal focus:text-ink focus:rounded-lg">К содержимому</a>
+
+<div class="brand-topbar">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between gap-4">
+        <span>Запчасти для тех, кто ремонтирует</span>
+        <a href="{{ shop.phone_href }}">Самара <strong>{{ shop.phone }}</strong></a>
+    </div>
+</div>
+<header class="site-header sticky top-0 z-30 bg-white/95 dark:bg-night-surface/95 backdrop-blur border-b border-line dark:border-night-line">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center gap-3 sm:gap-5">
+        <a href="/catalog" class="brand-logo" aria-label="ПАРТС — каталог">
+            <span class="brand-wordmark">ПАРТС<span class="brand-dot">.</span></span>
+            <span class="brand-caption">ЗАПЧАСТИ И АКСЕССУАРЫ</span>
+        </a>
+
+        {% block header_search %}
+        <form action="/catalog" method="get" role="search" class="flex-1 max-w-2xl hidden md:block">
+            <label class="relative block">
+                <span class="sr-only">Поиск по модели, детали или артикулу</span>
+                <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <input type="search" name="q" data-suggest="/catalog/suggest" autocomplete="off" value="{{ q or '' }}"
+                       placeholder="Модель и деталь, например «iPhone 11 дисплей»"
+                       class="field pl-10 bg-paper dark:bg-night border-transparent dark:border-night-line focus:bg-white dark:focus:bg-night">
+            </label>
+        </form>
+        {% endblock %}
+
+        <div class="flex items-center gap-1 sm:gap-2 ml-auto">
+            {% if request.state.cities %}
+            <form action="/city" method="post" class="hidden sm:block">
+                <label class="relative flex items-center gap-1.5 h-10 pl-2.5 pr-1 rounded-lg hover:bg-paper dark:hover:bg-night text-sm cursor-pointer">
+                    <svg class="w-4 h-4 text-muted shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+                    <span class="sr-only">Ваш город</span>
+                    <select name="city_id" onchange="this.form.submit()" class="bg-transparent font-medium pr-1 cursor-pointer focus:outline-none">
+                        {% for c in request.state.cities %}
+                        <option value="{{ c.id }}" {% if request.state.city and c.id == request.state.city.id %}selected{% endif %}>{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </form>
+            {% endif %}
+
+            <button type="button" onclick="toggleTheme()" class="w-10 h-10 grid place-items-center rounded-lg hover:bg-paper dark:hover:bg-night text-muted dark:text-night-muted" aria-label="Сменить тему">
+                <svg class="w-5 h-5 dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.4 15.4A9 9 0 0 1 8.6 3.6 9 9 0 1 0 20.4 15.4z"/></svg>
+                <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+            </button>
+
+            {% if request.state.user %}
+                {% if request.state.user.is_superuser %}
+                <a href="/admin/dashboard" class="hidden sm:inline-flex btn-quiet">Админка</a>
+                {% endif %}
+                <a href="/auth/account" class="h-10 flex items-center gap-2 px-2 rounded-lg hover:bg-paper dark:hover:bg-night" title="Личный кабинет">
+                    <span class="w-8 h-8 rounded-full bg-ink text-white dark:bg-night-text dark:text-night grid place-items-center text-sm font-bold">{{ request.state.user.username[0] | upper }}</span>
+                    <span class="hidden lg:block text-sm font-medium max-w-[9rem] truncate">{{ request.state.user.username }}</span>
+                </a>
+            {% else %}
+                <a href="/auth/login" class="btn-quiet font-semibold text-ink dark:text-night-text">Войти</a>
+            {% endif %}
+
+            {% block header_cart %}
+            <a href="/cart" class="relative h-10 flex items-center gap-2 pl-3 pr-3.5 rounded-lg bg-ink text-white dark:bg-night-text dark:text-night hover:bg-ink/90" aria-label="Корзина">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h8.7a1.5 1.5 0 0 0 1.5-1.1L21 8H6.2"/><circle cx="9.5" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/></svg>
+                <span class="hidden sm:inline text-sm font-semibold">Корзина</span>
+                <span id="cart-count" class="hidden min-w-[22px] h-[22px] px-1.5 rounded-full bg-signal text-ink text-xs font-bold grid place-items-center tabular-nums">0</span>
+            </a>
+            {% endblock %}
+        </div>
+    </div>
+
+    {% block mobile_bar %}
+    <div class="md:hidden px-4 pb-3 flex gap-2">
+        {% block mobile_search %}
+        <form action="/catalog" method="get" role="search" class="flex-1">
+            <label class="relative block">
+                <span class="sr-only">Поиск</span>
+                <input type="search" name="q" data-suggest="/catalog/suggest" autocomplete="off" value="{{ q or '' }}"
+                       placeholder="Модель и деталь или артикул" class="field bg-paper dark:bg-night border-transparent">
+            </label>
+        </form>
+        {% endblock %}
+        {% if request.state.cities %}
+        <form action="/city" method="post" class="sm:hidden">
+            <label class="sr-only" for="city-m">Ваш город</label>
+            <select id="city-m" name="city_id" onchange="this.form.submit()" class="field w-auto pr-7 text-sm">
+                {% for c in request.state.cities %}
+                <option value="{{ c.id }}" {% if request.state.city and c.id == request.state.city.id %}selected{% endif %}>{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </form>
+        {% endif %}
+    </div>
+    {% endblock %}
+</header>
+
+<main id="main" class="max-w-7xl mx-auto px-4 py-6 sm:py-8 w-full flex-1">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="mt-16 border-t border-line dark:border-night-line bg-white dark:bg-night-surface">
+    <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
+        <div class="col-span-2 md:col-span-1">
+            <div class="brand-wordmark text-2xl mb-2">ПАРТС<span class="brand-dot">.</span></div>
+            <p class="text-muted dark:text-night-muted leading-relaxed max-w-xs">Запчасти и комплектующие для ремонта телефонов, ноутбуков и консолей. {{ shop.cities|join(" и ") }}.</p>
+            <div class="mt-4 grid gap-2">
+                {% for branch in shop.branches %}
+                <div><span class="hint">{{ branch.name }}</span>{% if branch.phone %} <a href="{{ branch.phone_href }}" class="font-bold tabular-nums hover:underline">{{ branch.phone }}</a>{% elif branch.coming_soon %} <span class="hint">· скоро открытие</span>{% endif %}</div>
+                {% endfor %}
+            </div>
+        </div>
+        <nav class="flex flex-col gap-2" aria-label="Покупателям">
+            <span class="font-semibold mb-1">Покупателям</span>
+            <a href="/delivery" class="text-muted dark:text-night-muted hover:text-ink dark:hover:text-night-text">Доставка</a>
+            <a href="/payment" class="text-muted dark:text-night-muted hover:text-ink dark:hover:text-night-text">Оплата</a>
+            <a href="/warranty" class="text-muted dark:text-night-muted hover:text-ink dark:hover:text-night-text">Гарантия и возврат</a>
+            {% if seo.bot_link() %}<a href="{{ seo.bot_link() }}" class="text-muted dark:text-night-muted hover:text-ink dark:hover:text-night-text" rel="noopener">Мы в Telegram</a>{% endif %}
+        </nav>
+        <nav class="flex flex-col gap-2" aria-label="Компания">
+            <span class="font-semibold mb-1">Компания</span>
+            <a href="/about" class="text-muted dark:text-night-muted hover:text-ink dark:hover:text-night-text">О компании</a>
+            <a href="/contacts" class="text-muted dark:text-night-muted hover:text-ink dark:hover:text-night-text">Контакты</a>
+            <a href="/auth/account" class="text-muted dark:text-night-muted hover:text-ink dark:hover:text-night-text">Оптовым покупателям</a>
+        </nav>
+        <div class="col-span-2 md:col-span-1 text-muted dark:text-night-muted text-[13px] leading-relaxed md:text-right">
+            {{ shop.seller }}<br>ИНН {{ shop.inn }}, ОГРНИП {{ shop.ogrnip }}
+            <div class="mt-3"><a href="/privacy" class="hover:text-ink dark:hover:text-night-text underline underline-offset-2">Политика конфиденциальности</a></div>
+            <div class="mt-1">© 2026 ПАРТС</div>
+        </div>
+    </div>
+</footer>
+
+<!-- Уведомления (добавление в корзину и т.п.) -->
+{% block chat_widget %}{% include "_chat_widget.html" %}{% endblock %}
+
+<div id="toasts" class="fixed z-50 bottom-20 left-1/2 -translate-x-1/2 sm:left-auto sm:right-4 sm:translate-x-0 flex flex-col gap-2 w-[calc(100%-2rem)] sm:w-96" aria-live="polite"></div>
+
+<script>
+    function toggleTheme() {
+        const dark = document.documentElement.classList.toggle('dark');
+        try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (e) {}
+    }
+
+    function refreshCartCount() {
+        fetch('/cart/count').then(r => r.json()).then(data => {
+            const el = document.getElementById('cart-count');
+            el.textContent = data.count;
+            el.classList.toggle('hidden', !(data.count > 0));
+        }).catch(() => {});
+    }
+    refreshCartCount();
+
+    // Короткое уведомление внизу экрана; action — {href, text} для ссылки справа
+    function toast(text, action, kind) {
+        const box = document.getElementById('toasts');
+        const el = document.createElement('div');
+        el.className = 'flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg text-sm transition duration-200 opacity-0 translate-y-2 ' +
+            (kind === 'error' ? 'bg-red-600 text-white' : 'bg-ink text-white dark:bg-night-text dark:text-night');
+        el.innerHTML = '<span class="flex-1 min-w-0"></span>';
+        el.firstChild.textContent = text;
+        if (action) {
+            const a = document.createElement('a');
+            a.href = action.href; a.textContent = action.text;
+            a.className = 'shrink-0 font-semibold text-signal dark:text-ink underline-offset-2 hover:underline';
+            el.appendChild(a);
+        }
+        box.appendChild(el);
+        requestAnimationFrame(() => el.classList.remove('opacity-0', 'translate-y-2'));
+        setTimeout(() => { el.classList.add('opacity-0'); setTimeout(() => el.remove(), 250); }, 3500);
+    }
+
+    // Кнопки «В корзину»: hx-post="/cart/add" + data-name — показываем подтверждение и состояние кнопки
+    document.addEventListener('htmx:afterRequest', e => {
+        const el = e.detail.elt;
+        if (!el.matches('[data-add-to-cart]')) return;
+        if (e.detail.successful) {
+            refreshCartCount();
+            toast('Добавлено: ' + (el.dataset.name || 'товар'), {href: '/cart', text: 'В корзину'});
+            const btn = el.matches('button') ? el : el.querySelector('button[type=submit]');
+            if (btn && btn.dataset.done) {
+                const original = btn.innerHTML;
+                btn.innerHTML = btn.dataset.done;
+                setTimeout(() => { btn.innerHTML = original; }, 1600);
+            }
+        } else {
+            toast('Не удалось добавить товар — обновите страницу и попробуйте снова', null, 'error');
+        }
+    });
+</script>
+
+<script>
+// Подсказки поиска: <input data-suggest="/url"> → выпадающий список товаров.
+// data-suggest-pick="sku" — по клику подставить артикул в поле (приход/списание), иначе перейти на товар.
+(function () {
+    function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function money(v) { const k = Number(v) % 1 ? 2 : 0; return Number(v).toLocaleString('ru-RU', {minimumFractionDigits: k, maximumFractionDigits: k}) + ' ₽'; }
+
+    function attach(input) {
+        const url = input.dataset.suggest, pickSku = input.dataset.suggestPick === 'sku';
+        const host = input.parentNode;
+        if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+        const box = document.createElement('div');
+        box.setAttribute('role', 'listbox');
+        box.className = 'hidden absolute left-0 right-0 top-full mt-1.5 z-50 bg-white dark:bg-night-surface border border-line dark:border-night-line rounded-xl overflow-hidden shadow-xl text-left max-h-[26rem] overflow-y-auto';
+        host.appendChild(box);
+        let items = [], active = -1, timer = null, seq = 0, lastQ = '';
+
+        function close() { box.classList.add('hidden'); active = -1; }
+        function render() {
+            if (!items.length) {
+                box.innerHTML = '<div class="px-4 py-3 text-sm text-muted">Ничего не нашлось. Попробуйте модель и тип детали: «A51 дисплей».</div>';
+                box.classList.remove('hidden'); return;
+            }
+            box.innerHTML = items.map((it, i) => `
+                <a href="${esc(it.url || '#')}" data-i="${i}" role="option" class="flex items-center justify-between gap-3 px-4 py-2.5 text-sm border-b border-line/60 dark:border-night-line/60 last:border-0 ${i === active ? 'bg-paper dark:bg-night' : 'hover:bg-paper dark:hover:bg-night'}">
+                    <span class="min-w-0"><span class="block line-clamp-2">${esc(it.name)}</span>
+                    <span class="block sku mt-0.5">${esc(it.sku)}${it.stock !== undefined ? ' · остаток ' + esc(it.stock) : ''}</span></span>
+                    ${it.price === undefined ? '' : it.price === null ? '<span class="shrink-0 text-xs text-muted">Цена по запросу</span>' : `<span class="shrink-0 price text-sm">${money(it.price)}</span>`}
+                </a>`).join('') + (pickSku ? '' : `
+                <a href="/catalog?q=${encodeURIComponent(lastQ)}" class="block px-4 py-2.5 text-sm font-semibold link">Все результаты по запросу «${esc(lastQ)}»</a>`);
+            box.classList.remove('hidden');
+        }
+        function pick(i) {
+            const it = items[i];
+            if (!it) return false;
+            if (pickSku) {
+                input.value = it.sku; close();
+                input.dispatchEvent(new CustomEvent('suggest:pick', {detail: it}));
+            } else { location.href = it.url; }
+            return true;
+        }
+        input.addEventListener('input', () => {
+            clearTimeout(timer);
+            const q = input.value.trim();
+            if (q.length < 2) { items = []; close(); return; }
+            timer = setTimeout(async () => {
+                const my = ++seq;
+                try {
+                    const r = await fetch(url + '?q=' + encodeURIComponent(q));
+                    const data = await r.json();
+                    if (my !== seq) return;  // пришёл ответ на устаревший запрос
+                    lastQ = q; items = data.items || []; active = -1; render();
+                } catch (e) { close(); }
+            }, 180);
+        });
+        input.addEventListener('keydown', e => {
+            if (box.classList.contains('hidden') || !items.length) return;
+            if (e.key === 'ArrowDown') { active = (active + 1) % items.length; render(); e.preventDefault(); }
+            else if (e.key === 'ArrowUp') { active = (active - 1 + items.length) % items.length; render(); e.preventDefault(); }
+            else if (e.key === 'Enter' && active >= 0) { e.preventDefault(); pick(active); }
+            else if (e.key === 'Escape') close();
+        });
+        box.addEventListener('mousedown', e => {
+            const a = e.target.closest('[data-i]');
+            if (a) { e.preventDefault(); pick(+a.dataset.i); }
+        });
+        input.addEventListener('blur', () => setTimeout(close, 150));
+    }
+    document.querySelectorAll('input[data-suggest]').forEach(attach);
+    window.attachSuggest = attach;  // для полей, добавленных на страницу позже (строки заказа в админке)
+})();
+</script>
+{% block scripts %}{% endblock %}
+<script src="/static/passwords.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Вход через Telegram — ПАРТС{% endblock %}
+{% block head %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="max-w-sm mx-auto sm:mt-6 text-center">
+    <span class="mx-auto w-14 h-14 rounded-2xl bg-[#2AABEE] text-white grid place-items-center" aria-hidden="true">
+        <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3 18.6 20c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.2-8.3c.4-.4-.1-.6-.6-.2L6 13.6 1.1 12c-1.1-.3-1.1-1.1.2-1.6L20.5 3c.9-.3 1.7.2 1.4 1.3z"/></svg>
+    </span>
+    <h1 class="mt-4 text-2xl font-extrabold tracking-tight">Вход через Telegram</h1>
+    <p class="mt-2 text-muted dark:text-night-muted">Откройте бота и нажмите «Запустить» — вход на сайте выполнится сам. Пароль не нужен; если аккаунта ещё нет, он появится.</p>
+    <a href="{{ link }}" target="_blank" rel="noopener" class="btn-primary w-full mt-6 h-12 text-base">Открыть Telegram</a>
+    <p id="tg-status" class="mt-4 text-sm text-muted dark:text-night-muted" role="status">Ждём подтверждения в Telegram…</p>
+    <p class="mt-6 text-sm"><a href="/auth/login" class="link">Войти по паролю</a></p>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+    const status = document.getElementById('tg-status');
+    let tries = 0;
+    async function poll() {
+        tries++;
+        try {
+            const d = await (await fetch('/auth/telegram/poll', {cache: 'no-store'})).json();
+            if (d.ok) { status.textContent = 'Готово, входим…'; location.href = {{ next|tojson }}; return; }
+            if (d.expired) { status.innerHTML = 'Ссылка устарела. <a class="link" href="">Получить новую</a>'; return; }
+        } catch (e) {}
+        if (tries < 300) setTimeout(poll, 2000);
+    }
+    setTimeout(poll, 2000);
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends "admin_base.html" %}
+{% block title %}Админ — Новый заказ{% endblock %}
+{% block admin_content %}
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <h1 class="adm-h1">Новый заказ</h1>
+    {% if prefill.thread %}<a href="/admin/chats/{{ prefill.thread }}" class="adm-btn-ghost">← К обращению</a>{% else %}<a href="/admin/orders" class="adm-btn-ghost">← К заказам</a>{% endif %}
+</div>
+
+<form method="post" action="/admin/orders/new" id="order-form" class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px] gap-5 items-start">
+    <input type="hidden" name="thread" value="{{ prefill.thread }}">
+    <input type="hidden" name="user_id" id="user_id" value="{{ prefill.user_id }}">
+    <div class="grid gap-5 min-w-0">
+        <section class="adm-card p-5 grid gap-4">
+            <h2 class="font-bold">Покупатель</h2>
+            <div class="relative">
+                <label class="adm-label" for="user-q">Аккаунт <span class="adm-muted font-normal">— необязательно; найти по логину, имени или телефону</span></label>
+                <input id="user-q" class="adm-input" autocomplete="off" value="{{ prefill.user_label }}" placeholder="Гость, без аккаунта">
+                <div id="user-box" class="hidden absolute left-0 right-0 top-full mt-1 z-40 bg-white dark:bg-night-surface border border-line dark:border-night-line rounded-xl shadow-xl overflow-hidden"></div>
+                <p id="user-type" class="adm-muted mt-1">{% if prefill.user_id %}{{ 'Оптовый покупатель — оптовые цены' if prefill.wholesale else 'Розничный покупатель' }}{% endif %}</p>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div><label class="adm-label" for="name">Имя</label><input id="name" name="customer_name" class="adm-input" required value="{{ prefill.name }}"></div>
+                <div><label class="adm-label" for="phone">Телефон</label><input id="phone" name="customer_phone" class="adm-input" required value="{{ prefill.phone }}" inputmode="tel"></div>
+            </div>
+            <div id="price-type" class="{% if prefill.user_id %}hidden{% endif %}">
+                <span class="adm-label">Цены для гостя</span>
+                <label class="mr-4 text-sm"><input type="radio" name="price_type" value="retail" checked> Розница</label>
+                <label class="text-sm"><input type="radio" name="price_type" value="opt"> Опт</label>
+            </div>
+        </section>
+
+        <section class="adm-card p-5">
+            <h2 class="font-bold mb-3">Товары</h2>
+            <div id="rows" class="grid gap-2"></div>
+            <div class="relative mt-3">
+                <label class="sr-only" for="add-q">Добавить товар</label>
+                <input id="add-q" class="adm-input" autocomplete="off" data-suggest="/admin/api/suggest" data-suggest-pick="sku"
+                       placeholder="Добавить товар: «iPhone 11 дисплей», артикул…">
+            </div>
+            {% if prefill.user_id %}
+            <label class="mt-3 flex items-center gap-2 text-sm"><input type="checkbox" name="clear_cart" value="1" {% if rows %}checked{% endif %}> Очистить корзину покупателя после оформления</label>
+            {% endif %}
+        </section>
+
+        <section class="adm-card p-5 grid sm:grid-cols-2 gap-4">
+            <div><label class="adm-label" for="address">Адрес доставки</label><input id="address" name="address" class="adm-input" placeholder="Пусто — самовывоз"></div>
+            <div><label class="adm-label" for="comment">Комментарий покупателя</label><input id="comment" name="comment" class="adm-input" maxlength="1000"></div>
+            <div class="sm:col-span-2"><label class="adm-label" for="note">Заметка менеджера <span class="adm-muted font-normal">— покупатель не видит</span></label><input id="note" name="manager_note" class="adm-input" maxlength="1000"></div>
+        </section>
+    </div>
+
+    <aside class="adm-card p-5 grid gap-4 xl:sticky xl:top-24">
+        <div>
+            <span class="adm-label">Склад</span>
+            {% for c in cities %}
+            <label class="flex items-center gap-2 text-sm py-1"><input type="radio" name="city_id" value="{{ c.id }}" required {% if loop.first %}checked{% endif %}> {{ c.name }}</label>
+            {% endfor %}
+        </div>
+        <div class="flex justify-between items-baseline border-t border-line dark:border-night-line pt-4">
+            <span class="font-semibold">Итого</span><span id="total" class="text-2xl font-bold tabular-nums">0 ₽</span>
+        </div>
+        <p class="adm-muted -mt-2">Цены пересчитает сервер по типу покупателя; товар спишется со склада.</p>
+        <button class="adm-btn h-11">Оформить заказ</button>
+    </aside>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    let wholesale = {{ prefill.wholesale|tojson }};
+    const rows = document.getElementById('rows');
+    const money = v => Number(v).toLocaleString('ru-RU', {minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2}) + ' ₽';
+    function priceOf(it) { return wholesale && it.opt ? it.opt : it.price; }
+
+    function addRow(it, qty) {
+        const existing = rows.querySelector(`[data-sku="${CSS.escape(it.sku)}"]`);
+        if (existing) { const q = existing.querySelector('input[name=qty]'); q.value = +q.value + (qty || 1); recalc(); return; }
+        const row = document.createElement('div');
+        row.className = 'flex items-center gap-2 border border-line dark:border-night-line rounded-lg px-3 py-2';
+        row.dataset.sku = it.sku; row.dataset.price = it.price ?? ''; row.dataset.opt = it.opt ?? '';
+        row.innerHTML = '<input type="hidden" name="sku"><span class="flex-1 min-w-0 text-sm"><span class="block truncate"></span><span class="sku"></span></span>' +
+            '<input type="number" name="qty" min="1" max="999" class="adm-input !w-20 text-center">' +
+            '<span class="w-28 text-right tabular-nums text-sm" data-sum></span>' +
+            '<button type="button" class="adm-btn-ghost !h-8 !px-2" aria-label="Убрать">✕</button>';
+        row.querySelector('input[name=sku]').value = it.sku;
+        row.querySelector('.truncate').textContent = it.name;
+        row.querySelector('.sku').textContent = it.sku + (it.price === null ? ' · нет цены' : '') + (it.stock !== undefined ? ' · остаток ' + it.stock : '');
+        row.querySelector('input[name=qty]').value = qty || 1;
+        row.querySelector('input[name=qty]').addEventListener('input', recalc);
+        row.querySelector('button').addEventListener('click', () => { row.remove(); recalc(); });
+        rows.appendChild(row);
+        recalc();
+    }
+    function recalc() {
+        let total = 0;
+        rows.querySelectorAll('[data-sku]').forEach(r => {
+            const p = priceOf({price: r.dataset.price ? +r.dataset.price : null, opt: r.dataset.opt ? +r.dataset.opt : null});
+            const q = +r.querySelector('input[name=qty]').value || 0;
+            r.querySelector('[data-sum]').textContent = p === null ? 'нет цены' : money(p * q);
+            total += (p || 0) * q;
+        });
+        document.getElementById('total').textContent = money(total);
+    }
+    {% for r in rows %}addRow({{ r|tojson }}, {{ r.qty }});{% endfor %}
+
+    const addQ = document.getElementById('add-q');
+    addQ.addEventListener('suggest:pick', e => { addRow(e.detail, 1); addQ.value = ''; addQ.focus(); });
+
+    // Поиск покупателя
+    const uq = document.getElementById('user-q'), box = document.getElementById('user-box');
+    let timer;
+    uq.addEventListener('input', () => {
+        clearTimeout(timer);
+        document.getElementById('user_id').value = '';
+        document.getElementById('price-type').classList.remove('hidden');
+        document.getElementById('user-type').textContent = '';
+        wholesale = document.querySelector('input[name=price_type]:checked').value === 'opt'; recalc();
+        if (uq.value.trim().length < 2) { box.classList.add('hidden'); return; }
+        timer = setTimeout(async () => {
+            const d = await (await fetch('/admin/api/users?q=' + encodeURIComponent(uq.value.trim()))).json();
+            box.innerHTML = '';
+            d.items.forEach(u => {
+                const b = document.createElement('button');
+                b.type = 'button'; b.className = 'block w-full text-left px-4 py-2 text-sm hover:bg-paper dark:hover:bg-night';
+                b.textContent = u.label + ' · ' + u.username + (u.phone ? ' · ' + u.phone : '') + (u.wholesale ? ' · опт' : '');
+                b.addEventListener('mousedown', ev => {
+                    ev.preventDefault();
+                    document.getElementById('user_id').value = u.id; uq.value = u.label;
+                    if (u.phone && !document.getElementById('phone').value) document.getElementById('phone').value = u.phone;
+                    if (!document.getElementById('name').value) document.getElementById('name').value = u.label;
+                    wholesale = u.wholesale; recalc();
+                    document.getElementById('price-type').classList.add('hidden');
+                    document.getElementById('user-type').textContent = u.wholesale ? 'Оптовый покупатель — оптовые цены' : 'Розничный покупатель';
+                    box.classList.add('hidden');
+                });
+                box.appendChild(b);
+            });
+            box.classList.toggle('hidden', !d.items.length);
+        }, 200);
+    });
+    uq.addEventListener('blur', () => setTimeout(() => box.classList.add('hidden'), 150));
+    document.querySelectorAll('input[name=price_type]').forEach(r => r.addEventListener('change', () => {
+        wholesale = r.value === 'opt' && r.checked; recalc();
+    }));
+    document.getElementById('order-form').addEventListener('submit', e => {
+        if (!rows.querySelector('[data-sku]')) { e.preventDefault(); toast('Добавьте товары', null, 'error'); }
+    });
+})();
+</script>
+{% endblock %}

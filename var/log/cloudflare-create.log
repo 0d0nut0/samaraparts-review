@@ -1,0 +1,3 @@
+Tunnel credentials written to /Users/danil/.cloudflared/ea992cfb-1ea2-4446-936e-7c71424b397c.json. cloudflared chose this file based on where your origin certificate was found. Keep this file secret. To revoke these credentials, delete the tunnel.
+
+Created tunnel samaraparts-mac with id ea992cfb-1ea2-4446-936e-7c71424b397c

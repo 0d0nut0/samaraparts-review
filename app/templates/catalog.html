@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% import "_ui.html" as ui with context %}
+
+{% block title %}{% if q %}«{{ q }}» — поиск{% elif node %}{{ node.name }} — купить в {{ shop.cities_in }}{% else %}Запчасти для телефонов, ноутбуков и консолей{% endif %}{% if page > 1 %}, стр. {{ page }}{% endif %} | ПАРТС{% endblock %}
+{% block description %}{% if node %}{{ node.name }}: {{ total }} товаров с наличием в {{ shop.cities_in }}. Розничные и оптовые цены, самовывоз и доставка.{% else %}{{ super() }}{% endif %}{% endblock %}
+{% block head %}
+{% if not cat and not q %}{{ seo.organization() }}{% endif %}
+{% if node %}{{ seo.breadcrumbs(seo.crumbs(path)) }}{% endif %}
+{% endblock %}
+
+{% block header_search %}{% if cat or q or page > 1 %}{{ super() }}{% else %}<div class="flex-1"></div>{% endif %}{% endblock %}
+{% block mobile_search %}{% if cat or q or page > 1 %}{{ super() }}{% else %}<div class="flex-1"></div>{% endif %}{% endblock %}
+
+{% block content %}
+{% set qs = ('&q=' ~ (q|urlencode)) if q else '' %}
+{% set is_home = not cat and not q and page == 1 %}
+
+{% if is_home %}
+<section class="catalog-hero mb-10">
+    <div class="hero-copy">
+        <div class="hero-eyebrow"><span></span> КОМПЛЕКТУЮЩИЕ ДЛЯ ВАШЕЙ РАБОТЫ</div>
+        <h1>Найдите деталь.<br><span>Верните технику в строй.</span></h1>
+        <p class="hero-description">{{ total }} позиций для ремонта телефонов, планшетов, ноутбуков и консолей. Розница и опт, наличие по городам.</p>
+        <form action="/catalog" method="get" role="search" class="hero-search">
+            <label class="sr-only" for="hero-query">Модель, деталь или артикул</label>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+            <input id="hero-query" type="search" name="q" data-suggest="/catalog/suggest" autocomplete="off" placeholder="Модель, деталь или артикул">
+            <button type="submit">Найти <span aria-hidden="true">↗</span></button>
+        </form>
+        <div class="hero-examples"><span>Например:</span>{% for ex in examples[:3] %}<a href="/catalog?q={{ ex|urlencode }}">{{ ex }}</a>{% endfor %}</div>
+    </div>
+    <div class="hero-offer">
+        <div class="hero-offer-icon" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m3 7 9-4 9 4v10l-9 4-9-4V7Z"/><path d="m3 7 9 4 9-4M12 11v10M7.5 5l9 4"/></svg></div>
+        <div class="hero-offer-value">ОПТ</div>
+        <h2>Для мастеров<br>и сервисных центров</h2>
+        <p>Персональные условия для постоянных покупателей.</p>
+        <a href="{{ '/checkout' if request.state.user else '/auth/login?next=/catalog' }}">{{ 'Перейти к заказу' if request.state.user else 'Войти в аккаунт' }} <span aria-hidden="true">↗</span></a>
+    </div>
+</section>
+<div class="catalog-benefits">
+    <div><span class="benefit-icon">↗</span><span><strong>Розница и опт</strong><small>Для мастеров и сервисных центров</small></span></div>
+    <div><span class="benefit-icon">✓</span><span><strong>Наличие по городам</strong><small>Выберите склад перед заказом</small></span></div>
+    <div><span class="benefit-icon">＋</span><span><strong>Поможем с подбором</strong><small>Менеджер на связи в чате</small></span></div>
+</div>
+
+<section aria-labelledby="sections-title" class="mb-12">
+    <div class="flex items-center justify-between mb-5"><h2 id="sections-title" class="text-2xl font-bold">Каталог запчастей</h2><span class="hint hidden sm:block">Всё для ремонта в одном месте</span></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for s in sections %}
+        <div class="card category-card p-5 flex flex-col min-w-0">
+            <a href="/catalog?cat={{ s.slug }}" class="group flex items-start gap-3">
+                <span class="category-icon" aria-hidden="true">{{ ui.part_icon(s.name, "w-6 h-6") }}</span>
+                <span class="flex-1">
+                    <span class="block font-bold text-[17px] leading-snug group-hover:underline underline-offset-2">{{ s.name }}</span>
+                    <span class="hint">{{ s.count }} {% if s.count % 10 == 1 and s.count % 100 != 11 %}товар{% elif s.count % 10 in [2,3,4] and s.count % 100 not in [12,13,14] %}товара{% else %}товаров{% endif %}</span>
+                </span>
+            </a>
+            <ul class="mt-4 grid gap-1.5 text-sm">
+                {% for c in s.children[:5] %}
+                <li class="flex justify-between gap-3 min-w-0"><a href="/catalog?cat={{ c.slug }}" class="min-w-0 truncate hover:underline underline-offset-2">{{ c.name }}</a><span class="hint tabular-nums">{{ c.count }}</span></li>
+                {% endfor %}
+            </ul>
+            {% if s.children|length > 5 %}
+            <a href="/catalog?cat={{ s.slug }}" class="mt-3 text-sm font-semibold link">Все категории ({{ s.children|length }})</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% if not is_home %}
+<!-- Навигация по разделам -->
+<nav class="-mx-4 px-4 mb-5 flex gap-2 overflow-x-auto pb-1" aria-label="Разделы каталога">
+    <a href="/catalog{{ '?q=' ~ (q|urlencode) if q else '' }}" class="{{ 'chip-on' if not cat else 'chip' }}">Все</a>
+    {% for s in sections %}
+    <a href="/catalog?cat={{ s.slug }}{{ qs }}" class="{{ 'chip-on' if path and path[0].id == s.id else 'chip' }}"><span aria-hidden="true">{{ s.icon }}</span>{{ s.name }}</a>
+    {% endfor %}
+</nav>
+
+{% if path %}
+<nav class="mb-2 text-sm text-muted dark:text-night-muted flex flex-wrap items-center gap-1.5" aria-label="Вы здесь">
+    <a href="/catalog" class="hover:text-ink dark:hover:text-night-text">Каталог</a>
+    {% for n in path %}<span aria-hidden="true">/</span>{% if loop.last %}<span class="text-ink dark:text-night-text">{{ n.name }}</span>{% else %}<a href="/catalog?cat={{ n.slug }}{{ qs }}" class="hover:text-ink dark:hover:text-night-text">{{ n.name }}</a>{% endif %}{% endfor %}
+</nav>
+{% endif %}
+
+<div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-4">
+    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+        {% if q %}Поиск: «{{ q }}»{% elif node %}{{ node.name }}{% else %}Весь каталог{% endif %}
+    </h1>
+    <span class="text-muted dark:text-night-muted tabular-nums">{{ total }} {% if total % 10 == 1 and total % 100 != 11 %}товар{% elif total % 10 in [2,3,4] and total % 100 not in [12,13,14] %}товара{% else %}товаров{% endif %}</span>
+</div>
+
+{% if node and node.children %}
+<div class="mb-6 flex flex-wrap gap-2">
+    {% for c in node.children %}
+    <a href="/catalog?cat={{ c.slug }}{{ qs }}" class="chip">{{ c.name }} <span class="text-muted tabular-nums">{{ c.count }}</span></a>
+    {% endfor %}
+</div>
+{% endif %}
+{% else %}
+<h2 class="text-xl font-bold mb-4">Новые поступления</h2>
+{% endif %}
+
+{% if products %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+    {% for p in products %}
+    {{ ui.product_card(p, stocks.get(p.sku), city, wholesale) }}
+    {% endfor %}
+</div>
+
+{% if total_pages > 1 %}
+{% set base_qs = qs ~ ('&cat=' ~ cat if cat else '') %}
+<nav class="mt-10 flex items-center justify-center gap-1.5 flex-wrap" aria-label="Страницы">
+    {% if page > 1 %}<a href="?page={{ page - 1 }}{{ base_qs }}" class="chip h-10 px-4" rel="prev">Назад</a>{% endif %}
+    {% set start = [1, page - 2] | max %}
+    {% set end = [total_pages, page + 2] | min %}
+    {% if start > 1 %}<a href="?page=1{{ base_qs }}" class="chip h-10 min-w-10 justify-center">1</a>{% if start > 2 %}<span class="px-1 text-muted">…</span>{% endif %}{% endif %}
+    {% for n in range(start, end + 1) %}
+    <a href="?page={{ n }}{{ base_qs }}" class="{{ 'chip-on' if n == page else 'chip' }} h-10 min-w-10 justify-center tabular-nums" {% if n == page %}aria-current="page"{% endif %}>{{ n }}</a>
+    {% endfor %}
+    {% if end < total_pages %}{% if end < total_pages - 1 %}<span class="px-1 text-muted">…</span>{% endif %}<a href="?page={{ total_pages }}{{ base_qs }}" class="chip h-10 min-w-10 justify-center tabular-nums">{{ total_pages }}</a>{% endif %}
+    {% if page < total_pages %}<a href="?page={{ page + 1 }}{{ base_qs }}" class="chip h-10 px-4" rel="next">Дальше</a>{% endif %}
+</nav>
+{% endif %}
+
+{% else %}
+<div class="card p-8 sm:p-12 text-center max-w-xl mx-auto">
+    <h2 class="text-xl font-bold">{% if q %}По запросу «{{ q }}» ничего не нашлось{% else %}В этом разделе пока нет товаров{% endif %}</h2>
+    {% if q %}
+    <p class="mt-2 text-muted dark:text-night-muted">Напишите модель и тип детали без лишних слов — «A51 дисплей», «iPhone 12 акб» — или вставьте артикул целиком.</p>
+    <div class="mt-5 flex flex-wrap justify-center gap-2">
+        {% for ex in examples[:3] %}<a href="/catalog?q={{ ex|urlencode }}" class="chip">{{ ex }}</a>{% endfor %}
+    </div>
+    {% if cat %}<a href="/catalog?q={{ q|urlencode }}" class="btn-secondary mt-6">Искать во всём каталоге</a>{% endif %}
+    {% else %}
+    <a href="/catalog" class="btn-secondary mt-6">Вернуться в каталог</a>
+    {% endif %}
+    <p class="mt-6 hint">Не нашли деталь? Позвоните: <a href="{{ shop_contact(request.state.city).phone_href }}" class="link font-semibold">{{ shop_contact(request.state.city).phone }}</a> — подберём или привезём под заказ.</p>
+</div>
+{% endif %}
+{% endblock %}

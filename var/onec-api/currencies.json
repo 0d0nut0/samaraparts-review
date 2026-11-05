@@ -1,0 +1,10 @@
+{
+  "odata.metadata": "https://v12.arenda-it.com/efd8bqtl/odata/standard.odata/$metadata#Catalog_Валюты",
+  "value": [
+    {
+      "Ref_Key": "7f8b161b-d1df-11ec-a220-00155d01c811",
+      "Code": "643",
+      "Description": "RUB"
+    }
+  ]
+}

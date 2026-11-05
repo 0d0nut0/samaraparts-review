@@ -1,0 +1,91 @@
+# Локальная разработка: docker compose up -d postgres redis   (сайт запускается из .venv, см. README)
+# Сервер:               DOMAIN=parts.example.ru docker compose --profile prod up -d --build
+#   web   — сайт, bot — Telegram-бот (та же база), caddy — HTTPS-сертификат Let's Encrypt автоматически.
+# База и Redis наружу не открыты в prod; в разработке слушают только 127.0.0.1.
+services:
+  postgres:
+    image: postgres:16
+    container_name: partsbot_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-partsbot}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-partsbot_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-partsbot}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-partsbot}"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    container_name: partsbot_redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data
+
+  web:
+    profiles: ["prod"]
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-partsbot}:${POSTGRES_PASSWORD:-partsbot_secret}@postgres:5432/${POSTGRES_DB:-partsbot}
+      REDIS_URL: redis://redis:6379/0
+      HTTPS_ONLY: "true"
+      RUN_BOT: "0"   # бот — отдельный сервис ниже
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_started}
+    volumes:
+      - ./media:/app/media
+      - ./var:/app/var
+
+  bot:
+    profiles: ["prod"]
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-partsbot}:${POSTGRES_PASSWORD:-partsbot_secret}@postgres:5432/${POSTGRES_DB:-partsbot}
+      REDIS_URL: redis://redis:6379/0
+    command: ["python", "-m", "app.bot"]
+    user: app
+    depends_on:
+      web: {condition: service_started}
+
+  caddy:
+    profiles: ["prod"]
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    command: ["caddy", "reverse-proxy", "--from", "${DOMAIN:-localhost}", "--to", "web:8000"]
+    volumes:
+      - caddy_data:/data
+    depends_on: [web]
+
+  # Резервная копия базы каждую ночь в ./backups (хранятся 14 дней)
+  backup:
+    profiles: ["prod"]
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD:-partsbot_secret}
+    volumes:
+      - ./backups:/backups
+    entrypoint: ["sh", "-c", "while true; do pg_dump -h postgres -U ${POSTGRES_USER:-partsbot} ${POSTGRES_DB:-partsbot} | gzip > /backups/partsbot_$$(date +%F).sql.gz; find /backups -name '*.sql.gz' -mtime +14 -delete; sleep 86400; done"]
+    depends_on:
+      postgres: {condition: service_healthy}
+
+volumes:
+  postgres_data:
+  redis_data:
+  caddy_data:

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Восстановление пароля — ПАРТС{% endblock %}
+{% block head %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="max-w-sm mx-auto sm:mt-6">
+    <h1 class="text-2xl font-extrabold tracking-tight">Восстановление пароля</h1>
+    <div class="mt-5 card p-4 text-[15px]">
+        <p class="font-semibold">Помощь менеджера</p>
+        <p class="mt-2">Позвоните нам: <a href="{{ shop_contact(request.state.city).phone_href }}" class="link">{{ shop_contact(request.state.city).phone }}</a>. После проверки аккаунта менеджер передаст одноразовую ссылку для нового пароля.</p>
+        <p class="mt-2 text-sm text-muted">Отправка писем пока не подключена. Сообщать старый пароль менеджеру не нужно.</p>
+    </div>
+    {% if bot_enabled %}
+    {% if sent %}
+    <div class="mt-5 card p-4 text-[15px]" role="status">
+        <p class="font-semibold">Проверьте Telegram</p>
+        <p class="mt-1 text-muted dark:text-night-muted">Если аккаунт <b>{{ username }}</b> привязан к Telegram, бот прислал ссылку для нового пароля. Она действует 30 минут.</p>
+    </div>
+    <p class="mt-5 text-sm text-muted dark:text-night-muted">Не пришло? Telegram не привязан к аккаунту — {% if bot_enabled %}<a href="/auth/telegram" class="link font-semibold">войдите через Telegram</a> или {% endif %}позвоните нам: <a href="{{ shop_contact(request.state.city).phone_href }}" class="link">{{ shop_contact(request.state.city).phone }}</a>.</p>
+    {% else %}
+    <p class="mt-1 text-muted dark:text-night-muted">Пришлём ссылку для нового пароля в Telegram, привязанный к аккаунту.</p>
+    <form action="/auth/forgot" method="post" class="mt-6 grid gap-4">
+        <div>
+            <label class="label" for="username">Имя пользователя</label>
+            <input class="field" id="username" name="username" required autocomplete="username" autofocus>
+        </div>
+        <button type="submit" class="btn-primary w-full">Отправить ссылку в Telegram</button>
+    </form>
+    {% if bot_enabled %}
+    <p class="mt-6 text-sm text-muted dark:text-night-muted">Можно и без пароля: <a href="/auth/telegram" class="link font-semibold">войти через Telegram</a>, а новый пароль задать в личном кабинете.</p>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    <p class="mt-4 text-sm"><a href="/auth/login" class="link">← Ко входу</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+A browser window should have opened at the following URL:
+
+https://dash.cloudflare.com/argotunnel?aud=&callback=https%3A%2F%2Flogin.cloudflareaccess.org%2Fa_C4CVW51mHOtq4yF-q86eQJAur9yLmmMOHkk8e51QA%3D
+
+If the browser failed to open, please visit the URL above directly in your browser.
+2026-11-04T08:31:04Z INF Waiting for login...
+2026-11-04T08:31:57Z INF Waiting for login...
+2026-11-04T08:32:51Z INF Waiting for login...
+2026-11-04T08:33:51Z ERR Failed to write the certificate.
+
+Your browser will download the certificate instead. You will have to manually
+copy it to the following path:
+
+/Users/danil/.cloudflared/cert.pem
+ error="Get \"https://login.cloudflareaccess.org/a_C4CVW51mHOtq4yF-q86eQJAur9yLmmMOHkk8e51QA=\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)"
+Get "https://login.cloudflareaccess.org/a_C4CVW51mHOtq4yF-q86eQJAur9yLmmMOHkk8e51QA=": context deadline exceeded (Client.Timeout exceeded while awaiting headers)

@@ -1,0 +1,52 @@
+{% extends "admin_base.html" %}
+{% import "admin_macros.html" as m with context %}
+{% block title %}Админ — Пользователи{% endblock %}
+{% block admin_content %}
+<h1 class="adm-h1 mb-6">Пользователи и роли <span class="adm-muted font-mono text-base">({{ total }})</span></h1>
+
+<form method="get" class="flex gap-2 mb-6">
+    <input type="text" name="q" value="{{ q }}" placeholder="Поиск по имени пользователя" class="adm-input !w-72">
+    <button class="adm-btn-ghost" type="submit">Найти</button>
+</form>
+
+<div class="adm-card overflow-x-auto">
+    <table class="w-full">
+        <thead><tr><th class="adm-th">ID</th><th class="adm-th">Пользователь</th><th class="adm-th">Роль</th><th class="adm-th">Изменить роль</th><th class="adm-th">Тариф цен</th><th class="adm-th">Восстановление</th></tr></thead>
+        <tbody>
+        {% for u in users %}
+        <tr>
+            <td class="adm-td font-mono">#{{ u.id }}</td>
+            <td class="adm-td font-semibold">{{ u.username }}{% if u.id == user.id %} <span class="adm-muted">(вы)</span>{% endif %}</td>
+            <td class="adm-td">{{ role_labels[u.role.name] }}</td>
+            <td class="adm-td">
+                <form action="/admin/users/{{ u.id }}/role" method="post" class="flex gap-2">
+                    <select name="role" class="adm-input !w-auto">
+                        {% for r in UserRole %}
+                        <option value="{{ r.name }}" {% if u.role == r %}selected{% endif %}>{{ role_labels[r.name] }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="adm-btn-ghost">OK</button>
+                </form>
+            </td>
+            <td class="adm-td"><form action="/admin/users/{{ u.id }}/price-type" method="post" class="flex gap-2">
+                <select name="price_type" class="adm-input !w-auto">
+                {% for value, label in [('retail','Розница'), ('wholesale','ОПТ'), ('super_wholesale','СуперОПТ')] %}
+                <option value="{{ value }}" {% if u.effective_price_type == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}</select><button class="adm-btn-ghost">OK</button></form></td>
+            <td class="adm-td">{% if not u.is_superuser and u.can_sign_in %}
+                <details><summary class="cursor-pointer">Помочь со входом</summary>
+                <form action="/admin/users/{{ u.id }}/password-reset" method="post" class="mt-3 grid gap-3">
+                    <p class="text-sm">Свяжитесь с клиентом по ранее известному контакту или проверьте его лично. Одного логина недостаточно.</p>
+                    <label class="text-sm"><input type="checkbox" name="identity_checked" value="1" required> Владелец аккаунта проверен</label>
+                    <button class="adm-btn-ghost">Выдать ссылку на 30 минут</button>
+                </form></details>{% else %}—{% endif %}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="adm-td text-center adm-muted py-8">Пользователи не найдены</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<p class="adm-muted mt-3">Администратор — полный доступ к админке. Оптовый покупатель видит оптовые цены, покупатель — розничные.</p>
+{{ m.pagination(page, pages, '&q=' ~ (q|urlencode)) }}
+{% endblock %}

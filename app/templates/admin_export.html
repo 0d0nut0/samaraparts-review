@@ -1,0 +1,14 @@
+{% extends "admin_base.html" %}
+{% block title %}Админ — Экспорт CSV{% endblock %}
+{% block admin_content %}
+<h1 class="adm-h1 mb-2">Экспорт в CSV</h1>
+<p class="adm-muted mb-6">Разделитель «;», кодировка UTF-8 с BOM — файл сразу открывается в Excel.</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
+    {% for kind, (title, _) in exports.items() %}
+    <a href="/admin/export/{{ kind }}.csv" class="adm-card p-5 hover:border-purple-500/60 transition block">
+        <div class="font-bold text-gray-900 dark:text-white">{{ title }}</div>
+        <div class="adm-muted font-mono mt-1">{{ kind }}.csv</div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

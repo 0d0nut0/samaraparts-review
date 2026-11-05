@@ -1,0 +1,59 @@
+{% extends "admin_base.html" %}
+{% import "admin_macros.html" as m with context %}
+{% block title %}Админ — Заказы{% endblock %}
+{% block admin_content %}
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <h1 class="adm-h1">Заказы</h1>
+    <div class="flex gap-2">
+        <a href="/admin/orders/new" class="adm-btn">Новый заказ</a>
+        <a href="/admin/export/orders.csv" class="adm-btn-ghost">Скачать CSV</a>
+    </div>
+</div>
+
+<div class="flex flex-wrap gap-2 mb-6">
+    <a href="?status=all" class="{{ 'adm-btn' if status == 'all' else 'adm-btn-ghost' }}">Все ({{ counts.values()|sum }})</a>
+    {% for st in OrderStatus %}
+    <a href="?status={{ st.name }}" class="{{ 'adm-btn' if status == st.name else 'adm-btn-ghost' }}">{{ status_labels[st.name] }} ({{ counts.get(st.name, 0) }})</a>
+    {% endfor %}
+</div>
+
+<div class="adm-card overflow-x-auto">
+    <table class="w-full">
+        <thead>
+            <tr>
+                <th class="adm-th">№</th><th class="adm-th">Дата</th><th class="adm-th">Клиент</th>
+                <th class="adm-th">Город</th><th class="adm-th">Сумма</th><th class="adm-th">Статус</th><th class="adm-th">Изменить</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for order in orders %}
+        <tr class="hover:bg-purple-50/40 dark:hover:bg-white/5">
+            <td class="adm-td font-mono font-semibold"><a class="text-purple-600 dark:text-purple-400 hover:underline" href="/admin/orders/{{ order.id }}">#{{ order.id }}</a></td>
+            <td class="adm-td font-mono text-xs">{{ order.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+            <td class="adm-td">
+                <div class="font-semibold text-gray-900 dark:text-white">{{ order.customer_name }}</div>
+                <div class="adm-muted font-mono">{{ order.customer_phone }}{% if order.user %} · {{ order.user.username }}{% endif %}</div>
+            </td>
+            <td class="adm-td">{{ order.city.name if order.city else '—' }}</td>
+            <td class="adm-td font-mono font-bold">{{ m.money(order.total_amount) }}{% if order.order_type.name == 'WHOLESALE' %} <span class="adm-badge border-blue-500/30 text-blue-600">опт</span>{% endif %}</td>
+            <td class="adm-td">{{ m.order_badge(order.status) }}</td>
+            <td class="adm-td">
+                <form method="post" action="/admin/orders/{{ order.id }}/status" class="flex gap-2">
+                    <select name="status" class="adm-input !w-auto">
+                        {% for st in OrderStatus %}
+                        <option value="{{ st.name }}" {% if order.status == st %}selected{% endif %}>{{ status_labels[st.name] }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="adm-btn-ghost" type="submit">OK</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="adm-td text-center adm-muted py-8">Заказов с таким статусом нет</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<p class="adm-muted mt-3">Отмена заказа возвращает товар на склад города заказа; восстановление отменённого заказа снова списывает остаток.</p>
+{{ m.pagination(page, pages, '&status=' ~ status) }}
+{% endblock %}

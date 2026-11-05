@@ -1,0 +1,152 @@
+{# Чат с менеджером. Подключается в base.html, в админке отключён (block chat_widget). #}
+<div id="chat" class="fixed z-40 right-4 bottom-4 flex flex-col items-end gap-3" data-guest="{{ '0' if request.state.user else '1' }}">
+    <section id="chat-panel" class="hidden w-[calc(100vw-2rem)] sm:w-[380px] h-[min(560px,calc(100vh-7rem))] flex-col card shadow-2xl overflow-hidden" role="dialog" aria-labelledby="chat-title">
+        <header class="flex items-center gap-3 px-4 py-3 bg-ink text-white dark:bg-night-text dark:text-night">
+            <span class="w-9 h-9 rounded-full bg-signal text-ink grid place-items-center font-bold" aria-hidden="true">М</span>
+            <div class="flex-1 min-w-0">
+                <h2 id="chat-title" class="font-semibold leading-tight">Менеджер ПАРТС</h2>
+                <p class="text-xs opacity-75">Поможем подобрать деталь и оформить заказ</p>
+            </div>
+            <button type="button" id="chat-close" class="w-9 h-9 grid place-items-center rounded-lg hover:bg-white/10" aria-label="Свернуть чат">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+        </header>
+
+        <div id="chat-log" class="flex-1 overflow-y-auto px-4 py-4 space-y-2 bg-paper dark:bg-night" aria-live="polite">
+            <div id="chat-empty" class="text-center text-sm text-muted dark:text-night-muted py-8 px-4">
+                Напишите модель устройства и что нужно — менеджер ответит здесь.<br>
+                Можно не уходить со страницы: переписка сохранится.
+            </div>
+        </div>
+
+        <form id="chat-form" class="border-t border-line dark:border-night-line p-3 grid gap-2 bg-white dark:bg-night-surface">
+            <div id="chat-contact" class="hidden grid grid-cols-2 gap-2">
+                <label class="sr-only" for="chat-name">Имя</label>
+                <input id="chat-name" class="field py-2 text-sm" placeholder="Имя" autocomplete="name" maxlength="120">
+                <label class="sr-only" for="chat-phone">Телефон</label>
+                <input id="chat-phone" class="field py-2 text-sm" placeholder="Телефон (по желанию)" type="tel" autocomplete="tel" maxlength="50">
+            </div>
+            <div class="flex items-end gap-2">
+                <label class="sr-only" for="chat-text">Сообщение</label>
+                <textarea id="chat-text" rows="1" maxlength="2000" class="field py-2.5 resize-none max-h-32" placeholder="Сообщение…"></textarea>
+                <button type="submit" class="btn-primary h-11 w-11 px-0 shrink-0" aria-label="Отправить">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+                </button>
+            </div>
+            <p id="chat-error" class="hidden text-xs text-red-600"></p>
+            <p class="text-[11px] leading-snug text-muted dark:text-night-muted">Отправляя сообщение, вы соглашаетесь с <a href="/privacy" target="_blank" class="link">политикой обработки данных</a></p>
+        </form>
+    </section>
+
+    <button type="button" id="chat-open" aria-label="Чат с менеджером" class="relative h-12 w-12 justify-center sm:w-auto sm:justify-start sm:pl-4 sm:pr-5 rounded-full bg-ink text-white dark:bg-night-text dark:text-night shadow-lg flex items-center gap-2 font-semibold hover:-translate-y-px transition" aria-controls="chat-panel" aria-expanded="false">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg>
+        <span class="hidden sm:inline">Чат с менеджером</span>
+        <span id="chat-badge" class="hidden absolute -top-1 -right-1 min-w-[22px] h-[22px] px-1.5 rounded-full bg-signal text-ink text-xs font-bold grid place-items-center tabular-nums">0</span>
+    </button>
+</div>
+
+<script>
+(function () {
+    const $ = id => document.getElementById(id);
+    const root = $('chat'), panel = $('chat-panel'), log = $('chat-log'), form = $('chat-form'), text = $('chat-text');
+    let lastId = 0, open = false, timer = null, hasContact = root.dataset.guest === '0';
+
+    // Не перекрываем закреплённую панель покупки на странице товара (телефон)
+    const bar = document.querySelector('[data-bottom-bar]');
+    if (bar && getComputedStyle(bar).display !== 'none') root.style.bottom = (bar.offsetHeight + 12) + 'px';
+
+    function bubble(m) {
+        $('chat-empty')?.remove();
+        const mine = m.sender === 'client';
+        const row = document.createElement('div');
+        row.className = 'flex ' + (m.sender === 'system' ? 'justify-center' : mine ? 'justify-end' : 'justify-start');
+        const b = document.createElement('div');
+        b.className = m.sender === 'system'
+            ? 'text-xs text-muted dark:text-night-muted'
+            : 'max-w-[85%] rounded-2xl px-3.5 py-2 text-[15px] leading-snug whitespace-pre-wrap break-words ' +
+              (mine ? 'bg-ink text-white dark:bg-night-text dark:text-night rounded-br-md' : 'bg-white dark:bg-night-surface border border-line dark:border-night-line rounded-bl-md');
+        b.textContent = m.text;  // только textContent — никакого HTML от собеседника
+        const meta = document.createElement('div');
+        meta.className = 'mt-1 text-[11px] opacity-60 ' + (mine ? 'text-right' : '');
+        meta.textContent = (m.author ? m.author + ', ' : '') + m.time;
+        if (m.sender !== 'system') b.appendChild(meta);
+        row.appendChild(b);
+        log.appendChild(row);
+    }
+
+    async function poll() {
+        try {
+            const r = await fetch(`/chat/state?after=${lastId}&read=${open ? 1 : 0}`);
+            const d = await r.json();
+            if (d.thread) hasContact = hasContact || d.thread.has_contact;
+            if (d.messages.length) {
+                const atBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 60;
+                d.messages.forEach(m => { if (m.id > lastId) { bubble(m); lastId = m.id; } });
+                if (open && atBottom) log.scrollTop = log.scrollHeight;
+            }
+            const badge = $('chat-badge');
+            badge.textContent = d.unread;
+            badge.classList.toggle('hidden', !(d.unread > 0) || open);
+        } catch (e) {}
+        schedule();
+    }
+    function schedule() {
+        clearTimeout(timer);
+        if (document.hidden) return;
+        timer = setTimeout(poll, open ? 3000 : 20000);
+    }
+
+    window.openChat = function (prefill) {
+        open = true;
+        panel.classList.remove('hidden'); panel.classList.add('flex');
+        $('chat-open').classList.add('hidden');
+        $('chat-open').setAttribute('aria-expanded', 'true');
+        $('chat-contact').classList.toggle('hidden', hasContact);
+        if (prefill && !text.value) text.value = prefill;
+        text.focus();
+        log.scrollTop = log.scrollHeight;
+        try { sessionStorage.setItem('chat-open', '1'); } catch (e) {}
+        poll();
+    };
+    function closeChat() {
+        open = false;
+        panel.classList.add('hidden'); panel.classList.remove('flex');
+        $('chat-open').classList.remove('hidden');
+        $('chat-open').setAttribute('aria-expanded', 'false');
+        try { sessionStorage.removeItem('chat-open'); } catch (e) {}
+        schedule();
+    }
+
+    $('chat-open').addEventListener('click', () => openChat());
+    $('chat-close').addEventListener('click', closeChat);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && open) closeChat(); });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
+    text.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); } });
+    text.addEventListener('input', () => { text.style.height = 'auto'; text.style.height = Math.min(text.scrollHeight, 128) + 'px'; });
+
+    form.addEventListener('submit', async e => {
+        e.preventDefault();
+        const value = text.value.trim();
+        if (!value) return;
+        const err = $('chat-error');
+        err.classList.add('hidden');
+        const body = {text: value, page: location.pathname + location.search};
+        if (!hasContact) { body.name = $('chat-name').value; body.phone = $('chat-phone').value; }
+        try {
+            const r = await fetch('/chat/send', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+            const d = await r.json();
+            if (!d.ok) throw new Error(d.error || 'Не удалось отправить');
+            text.value = ''; text.style.height = 'auto';
+            if (body.phone) { hasContact = true; $('chat-contact').classList.add('hidden'); }
+            if (d.message.id > lastId) { bubble(d.message); lastId = d.message.id; }
+            log.scrollTop = log.scrollHeight;
+        } catch (ex) {
+            err.textContent = ex.message; err.classList.remove('hidden');
+        }
+    });
+
+    let reopen = false;
+    try { reopen = sessionStorage.getItem('chat-open') === '1'; } catch (e) {}
+    if (reopen) openChat(); else poll();
+})();
+</script>

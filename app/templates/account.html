@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% import "_password_fields.html" as passwords %}
+{% import "_ui.html" as ui with context %}
+{% block title %}Личный кабинет — ПАРТС{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="flex flex-wrap items-center gap-4 mb-8">
+        <span class="w-14 h-14 rounded-full bg-ink text-white dark:bg-night-text dark:text-night grid place-items-center text-2xl font-bold">{{ user.username[0] | upper }}</span>
+        <div class="flex-1 min-w-0">
+            <h1 class="text-2xl font-extrabold tracking-tight truncate">{{ user.full_name or user.username }}</h1>
+            <p class="text-muted dark:text-night-muted">{{ role_label }}{% if user.is_wholesale %} — действуют оптовые цены{% endif %}</p>
+        </div>
+        {% if user.is_superuser %}<a href="/admin/dashboard" class="btn-primary h-10 text-sm">Админ-панель</a>{% endif %}
+        <a href="/auth/logout" class="btn-secondary h-10 text-sm">Выйти</a>
+    </div>
+
+    {% if msg %}
+    <div class="mb-6 rounded-xl border border-ok/40 bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 text-sm" role="status">{{ msg }}</div>
+    {% endif %}
+    {% if error %}
+    <div class="mb-6 rounded-xl border border-red-500/40 bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-300" role="alert">{{ error }}</div>
+    {% endif %}
+    {% if bot_enabled and not user.telegram_id %}
+    <div class="mb-6 card p-4 flex flex-wrap items-center gap-3">
+        <span class="flex-1 min-w-[14rem] text-[15px]"><b>Статус заказа — в Telegram.</b> Привяжите Telegram: пришлём подтверждение и статусы заказов, ответы менеджера, а пароль можно будет восстановить.</span>
+        <form action="/auth/telegram/link" method="post"><button class="btn h-10 px-4 text-sm bg-[#2AABEE] text-white hover:bg-[#229ED9]">Привязать Telegram</button></form>
+    </div>
+    {% endif %}
+
+    {% if request.query_params.get('repeated') %}
+    <div class="mb-6 rounded-xl border border-ok/40 bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 text-sm" role="status">
+        Товары заказа добавлены в корзину. <a href="/cart" class="link font-semibold">Перейти в корзину</a>
+    </div>
+    {% endif %}
+
+    <section aria-labelledby="orders-title" class="mb-10">
+        <h2 id="orders-title" class="text-xl font-bold mb-3">Мои заказы</h2>
+        {% if orders %}
+        <div class="card divide-y divide-line dark:divide-night-line">
+            {% for o in orders %}
+            <details class="group" {% if loop.first %}open{% endif %}>
+                <summary class="flex items-center gap-3 px-4 sm:px-5 py-4 cursor-pointer list-none hover:bg-paper/60 dark:hover:bg-night/60">
+                    <svg class="w-4 h-4 shrink-0 text-muted transition group-open:rotate-90" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-semibold">Заказ № {{ o.id }}</div>
+                        <div class="hint">{{ o.created_at.strftime('%d.%m.%Y') }}, {{ o.city.name if o.city else '' }}, {{ o.items|length }} поз.</div>
+                    </div>
+                    <span class="adm-badge {{ status_classes[o.status.name] }}">{{ status_labels[o.status.name] }}</span>
+                    <span class="price w-24 text-right">{{ ui.money(o.total_amount) }}</span>
+                </summary>
+                <div class="px-4 sm:px-5 pb-4 pl-11 sm:pl-12">
+                    <ul class="grid gap-2 text-sm">
+                        {% for it in o.items %}
+                        <li class="flex justify-between gap-3">
+                            {% if it.product %}<a href="/catalog/{{ it.product.sku|urlencode }}" class="min-w-0 truncate hover:underline">{{ it.product.name }}</a>{% else %}<span>Товар #{{ it.product_id }}</span>{% endif %}
+                            <span class="shrink-0 tabular-nums text-muted dark:text-night-muted">{{ it.quantity }} × {{ ui.money(it.price_at_time) }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <form action="/auth/orders/{{ o.id }}/repeat" method="post" class="mt-4">
+                        <button type="submit" class="btn-secondary h-9 text-sm">Повторить заказ</button>
+                    </form>
+                </div>
+            </details>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="card p-6 text-center">
+            <p class="font-medium">Заказов пока нет</p>
+            <p class="hint mt-1">Здесь появятся оформленные заказы и их статусы.</p>
+            <a href="/catalog" class="btn-primary mt-4">Перейти в каталог</a>
+        </div>
+        {% endif %}
+    </section>
+
+    <section aria-labelledby="opt-title" class="card p-5 sm:p-6">
+        <h2 id="opt-title" class="text-xl font-bold">Оптовые цены</h2>
+        {% if user.is_wholesale %}
+        <p class="mt-2 stock-ok font-medium">Оптовый статус подтверждён — цены в каталоге и корзине уже со скидкой.</p>
+        {% elif application and application.status.name == 'PENDING' %}
+        <p class="mt-2 text-muted dark:text-night-muted">Заявка от {{ application.created_at.strftime('%d.%m.%Y') }} на рассмотрении. Обычно отвечаем в течение рабочего дня; вопросы — по телефону <a href="{{ shop_contact(request.state.city).phone_href }}" class="link">{{ shop_contact(request.state.city).phone }}</a>.</p>
+        {% else %}
+        <p class="mt-1 text-muted dark:text-night-muted">Для сервисных центров и магазинов. Расскажите о себе — менеджер проверит и включит оптовые цены.</p>
+        {% if application and application.status.name == 'REJECTED' %}
+        <p class="mt-3 text-sm text-red-600 dark:text-red-400">Предыдущая заявка отклонена. Уточните данные и отправьте снова.</p>
+        {% endif %}
+        <form action="/auth/wholesale" method="post" class="mt-4 grid gap-3">
+            <label class="sr-only" for="company">О компании</label>
+            <textarea id="company" name="company_details" required minlength="3" rows="3" class="field"
+                      placeholder="Название сервиса или магазина, ИНН, город, примерный объём закупок в месяц"></textarea>
+            <button type="submit" class="btn-primary justify-self-start">Отправить заявку</button>
+        </form>
+        {% endif %}
+    </section>
+
+    <section id="security" aria-labelledby="sec-title" class="card p-5 sm:p-6 mt-6 grid gap-6">
+        <h2 id="sec-title" class="text-xl font-bold">Вход и уведомления</h2>
+        {% if user.email %}<div><div class="font-semibold">E-mail</div><p class="hint">{{ user.email }} — {{ 'подтверждён' if user.email_verified else 'ожидает подтверждения' }}</p></div>{% endif %}
+        {% if bot_enabled %}
+        <div class="flex flex-wrap items-center gap-3">
+            <div class="flex-1 min-w-[14rem]">
+                <div class="font-semibold">Telegram</div>
+                {% if user.telegram_id %}
+                <p class="hint">Привязан. Вход без пароля, уведомления о заказах и восстановление пароля — через бота.</p>
+                {% else %}
+                <p class="hint">Не привязан</p>
+                {% endif %}
+            </div>
+            {% if user.telegram_id %}
+            <form action="/auth/telegram/unlink" method="post"><button class="btn-secondary h-10 text-sm">Отвязать</button></form>
+            {% else %}
+            <form action="/auth/telegram/link" method="post"><button class="btn h-10 px-4 text-sm bg-[#2AABEE] text-white hover:bg-[#229ED9]">Привязать</button></form>
+            {% endif %}
+        </div>
+        {% endif %}
+        <form action="/auth/password" method="post" class="grid sm:grid-cols-2 gap-3 items-end">
+            {% if has_password %}
+            <div>
+                <label class="label" for="old_password">Текущий пароль</label>
+                <input class="field" id="old_password" type="password" name="old_password" required autocomplete="current-password">
+            </div>
+            {% else %}
+            <p class="hint sm:self-center">Аккаунт создан через Telegram — задайте пароль, чтобы входить и с компьютера по логину <b>{{ user.username }}</b>.</p>
+            {% endif %}
+            {{ passwords.fields(name="new_password", label=('Новый пароль' if has_password else 'Пароль')) }}
+            <button class="btn-secondary">{{ 'Сменить' if has_password else 'Задать' }}</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

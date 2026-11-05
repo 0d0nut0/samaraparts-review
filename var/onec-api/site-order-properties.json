@@ -1,0 +1,126 @@
+{
+  "value": [
+    {
+      "odata.metadata": "https://v12.arenda-it.com/efd8bqtl/odata/standard.odata/$metadata#ChartOfCharacteristicTypes_ДополнительныеРеквизитыИСведения/@Element",
+      "Ref_Key": "dcd845c0-d889-11f1-a2af-00155d01c829",
+      "Виден": true,
+      "Description": "Дата заказа на сайте ПАРТС",
+      "DeletionMark": false,
+      "ValueType": {
+        "Types": [
+          "Date"
+        ],
+        "NumberQualifiers": {
+          "AllowedSign": "Any",
+          "Digits": 0,
+          "FractionDigits": 0
+        },
+        "StringQualifiers": {
+          "AllowedLength": "Variable",
+          "Length": "0"
+        },
+        "DateQualifiers": {
+          "DateFractions": "Date"
+        },
+        "BinaryDataQualifiers": {
+          "AllowedLength": "Variable",
+          "Length": "0"
+        }
+      },
+      "Predefined": false,
+      "PredefinedDataName": "",
+      "DataVersion": "AAAAAQAAAAA=",
+      "Доступен": true,
+      "ДополнительныеЗначенияИспользуются": false,
+      "Заголовок": "Дата заказа на сайте ПАРТС",
+      "ВыводитьВВидеГиперссылки": false,
+      "ВладелецДополнительныхЗначений_Key": "00000000-0000-0000-0000-000000000000",
+      "ДополнительныеЗначенияСВесом": false,
+      "ЗаголовокФормыЗначенияЯзык2": "",
+      "ЗаголовокЯзык2": "",
+      "ЗаголовокФормыВыбораЗначенияЯзык1": "",
+      "ЗаголовокЯзык1": "",
+      "ЗаголовокФормыЗначения": "",
+      "ЗаголовокФормыВыбораЗначения": "",
+      "ЗаголовокФормыВыбораЗначенияЯзык2": "",
+      "ЗаголовокФормыЗначенияЯзык1": "",
+      "Подсказка": "",
+      "ЗаполнятьОбязательно": false,
+      "МногострочноеПолеВвода": 0,
+      "ИдентификаторДляФормул": "PARTSOrderDate",
+      "Имя": "PARTSOrderDate",
+      "НаборСвойств_Key": "03dd5357-8b34-4da5-a195-8798e22640a3",
+      "Комментарий": "",
+      "ЦветСвойства": "",
+      "ФорматСвойства": "",
+      "ПодсказкаЯзык2": "",
+      "ПодсказкаЯзык1": "",
+      "ЭтоДополнительноеСведение": false,
+      "ВидСвойства": "",
+      "ЗависимостиДополнительныхРеквизитов": [],
+      "Представления": [],
+      "НаборСвойств@navigationLinkUrl": "ChartOfCharacteristicTypes_ДополнительныеРеквизитыИСведения(guid'dcd845c0-d889-11f1-a2af-00155d01c829')/НаборСвойств"
+    },
+    {
+      "odata.metadata": "https://v12.arenda-it.com/efd8bqtl/odata/standard.odata/$metadata#ChartOfCharacteristicTypes_ДополнительныеРеквизитыИСведения/@Element",
+      "Представления": [],
+      "ЗависимостиДополнительныхРеквизитов": [],
+      "ВидСвойства": "",
+      "ЦветСвойства": "",
+      "ЗаголовокФормыЗначенияЯзык2": "",
+      "ЗаголовокЯзык1": "",
+      "ЗаголовокЯзык2": "",
+      "ЗаполнятьОбязательно": false,
+      "ИдентификаторДляФормул": "PARTSOrderNumber",
+      "Имя": "PARTSOrderNumber",
+      "Комментарий": "",
+      "НаборСвойств_Key": "03dd5357-8b34-4da5-a195-8798e22640a3",
+      "МногострочноеПолеВвода": 0,
+      "Подсказка": "",
+      "ЭтоДополнительноеСведение": false,
+      "ПодсказкаЯзык1": "",
+      "ПодсказкаЯзык2": "",
+      "ФорматСвойства": "",
+      "Доступен": true,
+      "Заголовок": "Номер заказа на сайте ПАРТС",
+      "ЗаголовокФормыВыбораЗначения": "",
+      "ЗаголовокФормыЗначения": "",
+      "ЗаголовокФормыЗначенияЯзык1": "",
+      "ЗаголовокФормыВыбораЗначенияЯзык2": "",
+      "ЗаголовокФормыВыбораЗначенияЯзык1": "",
+      "DataVersion": "AAAAAgAAAAA=",
+      "Ref_Key": "dcd845c1-d889-11f1-a2af-00155d01c829",
+      "Predefined": false,
+      "Description": "Номер заказа на сайте ПАРТС",
+      "PredefinedDataName": "",
+      "ДополнительныеЗначенияСВесом": false,
+      "DeletionMark": false,
+      "ДополнительныеЗначенияИспользуются": false,
+      "Виден": true,
+      "ВыводитьВВидеГиперссылки": false,
+      "ВладелецДополнительныхЗначений_Key": "00000000-0000-0000-0000-000000000000",
+      "ValueType": {
+        "Types": [
+          "String"
+        ],
+        "NumberQualifiers": {
+          "AllowedSign": "Any",
+          "Digits": 0,
+          "FractionDigits": 0
+        },
+        "StringQualifiers": {
+          "AllowedLength": "Variable",
+          "Length": "100"
+        },
+        "DateQualifiers": {
+          "DateFractions": "DateTime"
+        },
+        "BinaryDataQualifiers": {
+          "AllowedLength": "Variable",
+          "Length": "0"
+        }
+      },
+      "НаборСвойств@navigationLinkUrl": "ChartOfCharacteristicTypes_ДополнительныеРеквизитыИСведения(guid'dcd845c1-d889-11f1-a2af-00155d01c829')/НаборСвойств"
+    }
+  ]
+}

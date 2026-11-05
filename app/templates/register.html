@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% import "_password_fields.html" as passwords %}
+{% block title %}Регистрация — ПАРТС{% endblock %}
+{% block content %}
+<div class="max-w-sm mx-auto sm:mt-6">
+    <h1 class="text-2xl font-extrabold tracking-tight">Регистрация</h1>
+    <p class="mt-1 text-muted dark:text-night-muted">Корзина сохранится. Сервисным центрам после регистрации доступна заявка на оптовые цены.</p>
+
+    {% if error %}
+    <div class="mt-5 rounded-lg border border-red-500/40 bg-red-50 dark:bg-red-500/10 px-3.5 py-2.5 text-sm text-red-700 dark:text-red-300" role="alert">{{ error }}</div>
+    {% endif %}
+
+    <form action="/auth/register" method="post" class="mt-6 grid gap-4">
+        <input type="hidden" name="next" value="{{ next or '' }}">
+        <div>
+            <label class="label" for="username">Имя пользователя</label>
+            <input class="field" id="username" type="text" name="username" required minlength="3" maxlength="50" autocomplete="username" value="{{ username or '' }}" autofocus>
+            <p class="hint mt-1">От 3 до 50 символов, будет логином для входа</p>
+        </div>
+        {% if email_required %}<div>
+            <label class="label" for="email">E-mail</label>
+            <input class="field" id="email" type="email" name="email" required maxlength="254" autocomplete="email" value="{{ email or '' }}">
+            <p class="hint mt-1">Пришлём ссылку для подтверждения аккаунта</p>
+        </div>{% endif %}
+        {{ passwords.fields() }}
+        <div>
+            <label class="label" for="phone">Телефон <span class="text-muted font-normal">— необязательно</span></label>
+            <input class="field" id="phone" type="tel" name="phone" autocomplete="tel" inputmode="tel" maxlength="50" value="{{ phone or '' }}" placeholder="+7 900 000-00-00">
+            <p class="hint mt-1">Подставим при оформлении заказа</p>
+        </div>
+        <label class="flex items-start gap-2.5 text-[13px] leading-snug text-muted dark:text-night-muted cursor-pointer">
+            <input type="checkbox" name="consent" value="1" required class="mt-0.5 w-4 h-4 accent-ink shrink-0" >
+            <span>Даю согласие на <a href="/privacy" target="_blank" class="link">обработку персональных данных</a> для регистрации и исполнения заказов</span>
+        </label>
+        <button type="submit" class="btn-primary w-full mt-1">Создать аккаунт</button>
+    </form>
+    {% if seo.bot_link() %}
+    <a href="/auth/telegram{{ '?next=' ~ (next|urlencode) if next else '' }}" class="btn w-full mt-4 bg-[#2AABEE] text-white hover:bg-[#229ED9]">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.9 4.3 18.6 20c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.2-8.3c.4-.4-.1-.6-.6-.2L6 13.6 1.1 12c-1.1-.3-1.1-1.1.2-1.6L20.5 3c.9-.3 1.7.2 1.4 1.3z"/></svg>
+        Или войти через Telegram
+    </a>
+    {% endif %}
+    <p class="mt-6 text-sm text-muted dark:text-night-muted">Уже есть аккаунт? <a href="/auth/login{{ '?next=' ~ (next|urlencode) if next else '' }}" class="link font-semibold">Войти</a></p>
+</div>
+{% endblock %}

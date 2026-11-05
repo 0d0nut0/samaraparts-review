@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>KeepAlive</key>
+	<true/>
+	<key>Label</key>
+	<string>com.samaraparts.tunnel</string>
+	<key>ProcessType</key>
+	<string>Background</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/danil/PycharmProjects/PartsBot_New/var/bin/cloudflared</string>
+		<string>tunnel</string>
+		<string>--no-autoupdate</string>
+		<string>--config</string>
+		<string>/Users/danil/PycharmProjects/PartsBot_New/var/tunnel.yml</string>
+		<string>run</string>
+		<string>--dns-resolver-addrs</string>
+		<string>1.1.1.1:53</string>
+		<string>--dns-resolver-addrs</string>
+		<string>1.0.0.1:53</string>
+		<string>ea992cfb-1ea2-4446-936e-7c71424b397c</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/Users/danil/PycharmProjects/PartsBot_New/var/log/tunnel-error.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/danil/PycharmProjects/PartsBot_New/var/log/tunnel.log</string>
+	<key>ThrottleInterval</key>
+	<integer>10</integer>
+	<key>WorkingDirectory</key>
+	<string>/Users/danil/PycharmProjects/PartsBot_New</string>
+</dict>
+</plist>

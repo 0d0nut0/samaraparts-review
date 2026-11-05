@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<rect width="1200" height="630" fill="#005038"/>
+<g fill="none" stroke="#b9ef77" stroke-opacity=".15"><circle cx="1100" cy="50" r="240"/><circle cx="1100" cy="50" r="320"/><circle cx="1100" cy="50" r="400"/></g>
+<text x="72" y="115" font-family="Arial,sans-serif" font-size="26" font-weight="600" letter-spacing="3" fill="#d0e8d6">ЗАПЧАСТИ И АКСЕССУАРЫ</text>
+<text x="64" y="300" font-family="Arial,sans-serif" font-size="160" font-weight="900" letter-spacing="-9" fill="#fff">ПАРТС<tspan fill="#b9ef77">.</tspan></text>
+<text x="72" y="385" font-family="Arial,sans-serif" font-size="38" fill="#b9ef77">Верните технику в строй.</text>
+<path d="M72 440h1056" stroke="#ffffff" stroke-opacity=".2"/>
+<text x="72" y="515" font-family="Arial,sans-serif" font-size="25" fill="#e1eee4">Телефоны · Планшеты · Ноутбуки · Консоли</text>
+<text x="72" y="560" font-family="Arial,sans-serif" font-size="21" fill="#b9d0c0">Розница и опт. Скидка 10% за самовывоз после входа.</text>
+</svg>

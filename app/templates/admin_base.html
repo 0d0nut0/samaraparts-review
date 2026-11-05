@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Админ-панель — ПАРТС{% endblock %}
+
+{% block chat_widget %}{% endblock %}
+{% block header_search %}<div class="flex-1"></div>{% endblock %}
+{% block header_cart %}<a href="/catalog" class="btn-quiet">На сайт</a>{% endblock %}
+{% block mobile_bar %}{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-0 py-4 flex flex-col md:flex-row gap-8 w-full">
+    <!-- Sidebar: пункты меню отфильтрованы по роли в app/routers/admin.py (NAV) -->
+    <aside class="w-full md:w-60 shrink-0">
+        <div class="adm-card p-4 md:sticky md:top-24">
+            <div class="px-2 mb-4">
+                <div class="text-sm font-bold text-gray-900 dark:text-white truncate">{{ user.username }}</div>
+                <div class="adm-muted">{{ role_labels[user.role.name] }}</div>
+            </div>
+            {% for section, items in nav %}
+            <h2 class="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-4 mb-1.5 px-2">{{ section }}</h2>
+            <nav class="flex flex-col gap-0.5 text-sm font-medium">
+                {% for url, title in items %}
+                {% set active = path == url or (url != '/admin/products' and path.startswith(url + '/')) or (url == '/admin/products' and path.startswith('/admin/products/') and not path.startswith('/admin/products/receive') and not path.startswith('/admin/products/writeoff')) %}
+                <a href="{{ url }}"
+                   class="flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl transition-colors {% if active %}bg-purple-600 text-white{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50/80 dark:hover:bg-white/5{% endif %}">{{ title }}{% if url in ('/admin/chats', '/admin/orders', '/admin/wholesale') %}<span data-badge="{{ {'/admin/chats': 'chats', '/admin/orders': 'orders', '/admin/wholesale': 'wholesale'}[url] }}" class="hidden min-w-[22px] h-[22px] px-1.5 rounded-full bg-signal text-ink text-xs font-bold grid place-items-center tabular-nums">0</span>{% endif %}</a>
+                {% endfor %}
+            </nav>
+            {% endfor %}
+        </div>
+    </aside>
+
+    <!-- Content -->
+    <div class="flex-1 min-w-0 w-full">
+        {% if msg %}
+        <div class="mb-6 px-4 py-3 rounded-xl border border-green-500/30 bg-green-500/10 text-sm text-green-700 dark:text-green-400">{{ msg }}</div>
+        {% endif %}
+        {% if error %}
+        <div class="mb-6 px-4 py-3 rounded-xl border border-red-500/30 bg-red-500/10 text-sm text-red-600 dark:text-red-400">{{ error }}</div>
+        {% endif %}
+        {% block admin_content %}{% endblock %}
+        <script>
+            // Живая админка: раз в 5 секунд спрашиваем /admin/api/events. Новые заказы и сообщения —
+            // всплывающее уведомление со ссылкой и короткий сигнал; счётчики в меню и во вкладке браузера.
+            (function () {
+                const baseTitle = document.title;
+                let prev = null;
+                function beep() {
+                    try {
+                        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                        const o = ctx.createOscillator(), g = ctx.createGain();
+                        o.frequency.value = 880; g.gain.value = 0.06;
+                        o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 0.15);
+                    } catch (e) {}
+                }
+                async function tick() {
+                    if (document.hidden && prev) return;
+                    let d;
+                    try { d = await (await fetch('/admin/api/events', {cache: 'no-store'})).json(); } catch (e) { return; }
+                    document.querySelectorAll('[data-badge]').forEach(el => {
+                        const n = d[el.dataset.badge] || 0;
+                        el.textContent = n; el.classList.toggle('hidden', !(n > 0));
+                    });
+                    const waiting = (d.chats || 0) + (d.orders || 0);
+                    document.title = (waiting ? '(' + waiting + ') ' : '') + baseTitle;
+                    const changed = {
+                        order: prev && d.last_order && (!prev.last_order || d.last_order.id > prev.last_order.id),
+                        msg: prev && d.last_msg && (!prev.last_msg || d.last_msg.id > prev.last_msg.id),
+                        chats: prev && d.chats !== prev.chats,
+                    };
+                    if (changed.order) {
+                        toast('Новый заказ № ' + d.last_order.id + ' — ' + d.last_order.name, {href: '/admin/orders/' + d.last_order.id, text: 'Открыть'});
+                        beep();
+                    }
+                    if (changed.msg && !location.pathname.startsWith('/admin/chats/' + d.last_msg.thread)) {
+                        toast('Сообщение: ' + d.last_msg.text, {href: '/admin/chats/' + d.last_msg.thread, text: 'Ответить'});
+                        beep();
+                    }
+                    if (prev) document.dispatchEvent(new CustomEvent('admin:events', {detail: {data: d, changed}}));
+                    prev = d;
+                }
+                tick(); setInterval(tick, 5000);
+                document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
+            })();
+        </script>
+    </div>
+</div>
+{% endblock %}

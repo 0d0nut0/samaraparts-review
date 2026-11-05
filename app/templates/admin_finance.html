@@ -1,0 +1,41 @@
+{% extends "admin_base.html" %}
+{% import "admin_macros.html" as m with context %}
+{% block title %}Админ — Финансы{% endblock %}
+{% block admin_content %}
+<h1 class="adm-h1 mb-6">Финансовый анализ</h1>
+
+<h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Выполненные заказы</h2>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    {{ m.stat("Выручка", m.money0(fin.revenue)) }}
+    {{ m.stat("Прибыль", m.money0(fin.profit), "%.1f"|format(fin.profit_pct) ~ "% от выручки") }}
+    {{ m.stat("Заказов выполнено", fin.order_count) }}
+    {{ m.stat("Ср. себестоимость позиции", m.money(fin.avg_cost)) }}
+</div>
+
+<h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Склад</h2>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    {{ m.stat("Оценка (розница)", m.money0(stock.retail_value)) }}
+    {{ m.stat("Себестоимость", m.money0(stock.cost_value)) }}
+    {{ m.stat("Потенциальная прибыль", m.money0(stock.margin_value), "маржа ~" ~ "%.1f"|format(stock.margin_pct) ~ "%") }}
+    {{ m.stat("Средняя торговая наценка", "%.1f"|format(fin.avg_margin) ~ "%", "по товарам с известной себестоимостью") }}
+</div>
+
+<div class="adm-card overflow-x-auto">
+    <h3 class="px-4 pt-4 pb-2 font-bold text-gray-900 dark:text-white">Топ-10 товаров по марже</h3>
+    <table class="w-full">
+        <thead><tr><th class="adm-th">Товар</th><th class="adm-th">Себестоимость</th><th class="adm-th">Цена</th><th class="adm-th">Маржа</th></tr></thead>
+        <tbody>
+        {% for id, sku, name, cost, base, margin in top_margin %}
+        <tr>
+            <td class="adm-td"><a class="hover:underline" href="/admin/products/{{ id }}">{{ name }}</a><div class="adm-muted font-mono">{{ sku }}</div></td>
+            <td class="adm-td font-mono">{{ m.money(cost) }}</td>
+            <td class="adm-td font-mono">{{ m.money(base) }}</td>
+            <td class="adm-td font-mono font-bold">{{ "%.1f"|format(margin) }}%</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="adm-td text-center adm-muted">Нет товаров с указанной себестоимостью</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

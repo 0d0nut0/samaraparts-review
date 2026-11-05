@@ -1,0 +1,27 @@
+{% extends "admin_base.html" %}
+{% block title %}Админ — Низкие остатки{% endblock %}
+{% block admin_content %}
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <h1 class="adm-h1">Низкие остатки <span class="adm-muted font-mono text-base">({{ rows|length }}{% if rows|length == 500 %}+{% endif %})</span></h1>
+    <a href="/admin/forecast" class="adm-btn-ghost">Прогноз закупок</a>
+</div>
+
+<div class="adm-card overflow-x-auto">
+    <table class="w-full">
+        <thead><tr><th class="adm-th">Артикул</th><th class="adm-th">Название</th><th class="adm-th">Остаток</th><th class="adm-th">Порог</th><th class="adm-th"></th></tr></thead>
+        <tbody>
+        {% for p, qty in rows %}
+        <tr>
+            <td class="adm-td font-mono text-xs">{{ p.sku }}</td>
+            <td class="adm-td"><a class="hover:underline" href="/admin/products/{{ p.id }}">{{ p.name }}</a></td>
+            <td class="adm-td font-mono font-bold {% if qty == 0 %}text-red-600{% else %}text-yellow-600{% endif %}">{{ qty }}</td>
+            <td class="adm-td font-mono">{{ p.critical_stock_threshold }}</td>
+            <td class="adm-td text-right"><a href="/admin/products/receive?article={{ p.sku|urlencode }}" class="text-purple-600 dark:text-purple-400 font-semibold hover:underline">Оприходовать</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="adm-td text-center adm-muted py-8">Все позиции выше порога — оповещений нет.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

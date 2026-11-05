@@ -1,0 +1,62 @@
+{% extends "admin_base.html" %}
+{% import "admin_macros.html" as m with context %}
+{% block title %}Админ — Заказ #{{ order.id }}{% endblock %}
+{% block admin_content %}
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <h1 class="adm-h1">Заказ #{{ order.id }} {{ m.order_badge(order.status) }}</h1>
+    <a href="/admin/orders/{{ order.id }}/invoice" class="adm-btn-ghost" target="_blank" rel="noopener">Печать счёта</a>
+    <a href="/admin/orders/{{ order.id }}/delivery-note" class="adm-btn-ghost" target="_blank" rel="noopener">Печать накладной</a>
+    <a href="/admin/orders" class="adm-btn-ghost">← К списку</a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="adm-card p-5 space-y-2 text-sm">
+        <div><span class="adm-muted">Создан:</span> <span class="font-mono">{{ order.created_at.strftime('%d.%m.%Y %H:%M') }}</span></div>
+        <div><span class="adm-muted">Клиент:</span> <b>{{ order.customer_name }}</b></div>
+        <div><span class="adm-muted">Телефон:</span> <span class="font-mono">{{ order.customer_phone }}</span></div>
+        <div><span class="adm-muted">Аккаунт:</span> {{ order.user.username if order.user else 'гость' }}</div>
+        <div><span class="adm-muted">Город / склад:</span> {{ order.city.name if order.city else '—' }}</div>
+        <div><span class="adm-muted">Адрес:</span> {{ order.address or 'самовывоз' }}</div>
+        <div><span class="adm-muted">Тип:</span> {{ 'Опт' if order.order_type.name == 'WHOLESALE' else 'Розница' }}</div>
+        <div><span class="adm-muted">Источник:</span> {{ {'site': 'сайт', 'bot': 'Telegram-бот', 'admin': 'оформил менеджер'}.get(order.source, order.source) }}</div>
+        {% if order.user and order.user.telegram_id %}<div><span class="adm-muted">Telegram:</span> привязан — статусы уходят покупателю</div>{% endif %}
+        {% if order.comment %}<div class="pt-1"><span class="adm-muted">Комментарий покупателя:</span><br>{{ order.comment }}</div>{% endif %}
+        <div><span class="adm-muted">Оценка прибыли:</span> <span class="font-mono">{{ m.money(order.profit) if order.profit is not none else '—' }}</span></div>
+
+        <p class="adm-muted">Оценка по закупке каталога. Партийная себестоимость и ФИФО ведутся в 1С.</p>
+        <form method="post" action="/admin/orders/{{ order.id }}/status" class="pt-4 flex gap-2">
+            <select name="status" class="adm-input">
+                {% for st in OrderStatus %}
+                <option value="{{ st.name }}" {% if order.status == st %}selected{% endif %}>{{ status_labels[st.name] }}</option>
+                {% endfor %}
+            </select>
+            <button class="adm-btn" type="submit">Сохранить</button>
+        </form>
+        <form method="post" action="/admin/orders/{{ order.id }}/note" class="pt-3 grid gap-2">
+            <label class="adm-label" for="note">Заметка менеджера (покупатель не видит)</label>
+            <textarea id="note" name="note" rows="2" maxlength="1000" class="adm-input">{{ order.manager_note or '' }}</textarea>
+            <button class="adm-btn-ghost justify-self-start" type="submit">Сохранить заметку</button>
+        </form>
+    </div>
+
+    <div class="adm-card overflow-x-auto lg:col-span-2">
+        <table class="w-full">
+            <thead><tr><th class="adm-th">Товар</th><th class="adm-th">Кол-во</th><th class="adm-th">Цена</th><th class="adm-th">Сумма</th></tr></thead>
+            <tbody>
+            {% for it in order.items %}
+            <tr>
+                <td class="adm-td">
+                    {% if it.product %}<a class="font-semibold hover:underline" href="/admin/products/{{ it.product.id }}">{{ it.product.name }}</a>
+                    <div class="adm-muted font-mono">{{ it.product.sku }}</div>{% else %}#{{ it.product_id }}{% endif %}
+                </td>
+                <td class="adm-td font-mono">{{ it.quantity }}</td>
+                <td class="adm-td font-mono">{{ m.money(it.price_at_time) }}</td>
+                <td class="adm-td font-mono font-semibold">{{ m.money(it.price_at_time * it.quantity) }}</td>
+            </tr>
+            {% endfor %}
+            <tr><td colspan="3" class="adm-td text-right font-bold">Итого</td><td class="adm-td font-mono font-extrabold text-purple-600 dark:text-purple-400">{{ m.money(order.total_amount) }}</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

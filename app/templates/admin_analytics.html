@@ -1,0 +1,88 @@
+{% extends "admin_base.html" %}
+{% import "admin_macros.html" as m with context %}
+{% block title %}Админ — Продажи и ABC{% endblock %}
+{% block admin_content %}
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <h1 class="adm-h1">Продажи и ABC-анализ</h1>
+    <a href="/admin/export/analytics.csv" class="adm-btn-ghost">Скачать аналитику (CSV)</a>
+</div>
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+    {% for key, title in [("today", "Сегодня"), ("week", "7 дней"), ("month", "30 дней"), ("all", "Всё время")] %}
+    {% set p = kpi[key] %}
+    {{ m.stat(title, m.money0(p.revenue), p.count ~ " заказов · ср. чек " ~ m.money0(p.avg_check)) }}
+    {% endfor %}
+</div>
+<div class="adm-card p-4 mb-8 flex flex-wrap gap-3 items-center text-sm">
+    <span class="adm-muted uppercase tracking-wider font-semibold">Статусы заказов:</span>
+    {% for name, label in status_labels.items() %}
+    <span class="adm-badge {{ status_classes[name] }}">{{ label }}: {{ kpi.status_dist.get(name, 0) }}</span>
+    {% endfor %}
+</div>
+
+<h2 class="text-lg font-bold text-gray-900 dark:text-white mb-1">ABC-анализ ассортимента</h2>
+<p class="adm-muted mb-4">A — товары, дающие первые 80% выручки; B — следующие 15%; C — последние 5% и товары без продаж.</p>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+    {{ m.stat("Группа A", abc.counts.A ~ " поз.", m.money0(abc.revenue.A) ~ " · " ~ "%.1f"|format(abc.pct.A) ~ "%") }}
+    {{ m.stat("Группа B", abc.counts.B ~ " поз.", m.money0(abc.revenue.B) ~ " · " ~ "%.1f"|format(abc.pct.B) ~ "%") }}
+    {{ m.stat("Группа C", abc.counts.C ~ " поз.", m.money0(abc.revenue.C) ~ " · без продаж: " ~ abc.unsold) }}
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+    <div class="adm-card overflow-x-auto">
+        <h3 class="px-4 pt-4 pb-2 font-bold text-gray-900 dark:text-white">Локомотивы продаж (A)</h3>
+        <table class="w-full">
+            <thead><tr><th class="adm-th">Товар</th><th class="adm-th">Выручка</th><th class="adm-th">Доля</th><th class="adm-th">Остаток</th></tr></thead>
+            <tbody>
+            {% for i in abc.groups.A[:15] %}
+            <tr>
+                <td class="adm-td"><a class="hover:underline" href="/admin/products/{{ i.id }}">{{ i.name }}</a></td>
+                <td class="adm-td font-mono">{{ m.money0(i.revenue) }}</td>
+                <td class="adm-td font-mono">{{ "%.1f"|format(i.share) }}%</td>
+                <td class="adm-td font-mono">{{ i.stock_qty }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="adm-td text-center adm-muted">Нет продаж</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="adm-card overflow-x-auto">
+        <h3 class="px-4 pt-4 pb-2 font-bold text-gray-900 dark:text-white">Кандидаты на акции (без продаж, большой остаток)</h3>
+        <table class="w-full">
+            <thead><tr><th class="adm-th">Товар</th><th class="adm-th">Остаток</th></tr></thead>
+            <tbody>
+            {% for id, sku, name, qty in abc.dead_stock %}
+            <tr>
+                <td class="adm-td"><a class="hover:underline" href="/admin/products/{{ id }}">{{ name }}</a><div class="adm-muted font-mono">{{ sku }}</div></td>
+                <td class="adm-td font-mono">{{ qty }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="2" class="adm-td text-center adm-muted">Зависших остатков нет</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="adm-card overflow-x-auto">
+    <h3 class="px-4 pt-4 pb-2 font-bold text-gray-900 dark:text-white">Топ клиентов</h3>
+    <table class="w-full">
+        <thead><tr><th class="adm-th">Клиент</th><th class="adm-th">Тип</th><th class="adm-th">Заказов</th><th class="adm-th">Сумма</th><th class="adm-th">Ср. чек</th><th class="adm-th">Последний заказ</th></tr></thead>
+        <tbody>
+        {% for c in top_clients %}
+        <tr>
+            <td class="adm-td font-semibold">{{ c.User.username }}</td>
+            <td class="adm-td">{{ 'Опт' if c.User.is_wholesale else 'Розница' }}</td>
+            <td class="adm-td font-mono">{{ c.orders_count }}</td>
+            <td class="adm-td font-mono">{{ m.money0(c.total_spent) }}</td>
+            <td class="adm-td font-mono">{{ m.money0(c.avg_check) }}</td>
+            <td class="adm-td font-mono text-xs">{{ c.last_order.strftime('%d.%m.%Y %H:%M') if c.last_order else '—' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="adm-td text-center adm-muted">Пока нет заказов</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

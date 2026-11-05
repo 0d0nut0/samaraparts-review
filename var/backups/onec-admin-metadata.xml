@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
+		Version="1.0">
+	<edmx:DataServices xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+			m:DataServiceVersion="3.0"
+			m:MaxDataServiceVersion="3.0">
+		<Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm"
+				Namespace="StandardODATA">
+			<ComplexType Name="TypeDescription">
+				<Property Name="Types"
+						Type="Collection(Edm.String)"
+						Nullable="false"/>
+				<Property Name="NumberQualifiers"
+						Type="StandardODATA.NumberQualifiers"
+						Nullable="false"/>
+				<Property Name="StringQualifiers"
+						Type="StandardODATA.StringQualifiers"
+						Nullable="false"/>
+				<Property Name="DateQualifiers"
+						Type="StandardODATA.DateQualifiers"
+						Nullable="false"/>
+				<Property Name="BinaryDataQualifiers"
+						Type="StandardODATA.BinaryDataQualifiers"
+						Nullable="false"/>
+			</ComplexType>
+			<ComplexType Name="NumberQualifiers">
+				<Property Name="AllowedSign"
+						Type="Edm.String"
+						Nullable="false"/>
+				<Property Name="Digits"
+						Type="Edm.Int16"
+						Nullable="false"/>
+				<Property Name="FractionDigits"
+						Type="Edm.Int16"
+						Nullable="false"/>
+			</ComplexType>
+			<ComplexType Name="StringQualifiers">
+				<Property Name="AllowedLength"
+						Type="Edm.String"
+						Nullable="false"/>
+				<Property Name="Length"
+						Type="Edm.Int64"
+						Nullable="false"/>
+			</ComplexType>
+			<ComplexType Name="DateQualifiers">
+				<Property Name="DateFractions"
+						Type="Edm.String"
+						Nullable="false"/>
+			</ComplexType>
+			<ComplexType Name="BinaryDataQualifiers">
+				<Property Name="AllowedLength"
+						Type="Edm.String"
+						Nullable="false"/>
+				<Property Name="Length"
+						Type="Edm.Int64"
+						Nullable="false"/>
+			</ComplexType>
+			<ComplexType Name="PointInTime">
+				<Property Name="Ref"
+						Type="Edm.String"
+						Nullable="false"/>
+				<Property Name="Date"
+						Type="Edm.DateTime"
+						Nullable="false"/>
+			</ComplexType>
+			<EnumType Name="AccountType"
+					UnderlyingType="Edm.Int32">
+				<Member Name="Active"/>
+				<Member Name="ActivePassive"/>
+				<Member Name="Passive"/>
+			</EnumType>
+			<EnumType Name="AccountingRecordType"
+					UnderlyingType="Edm.Int32">
+				<Member Name="Credit"/>
+				<Member Name="Debit"/>
+			</EnumType>
+			<EnumType Name="AccumulationRecordType"
+					UnderlyingType="Edm.Int32">
+				<Member Name="Expense"/>
+				<Member Name="Receipt"/>
+			</EnumType>
+			<EnumType Name="AllowedSign"
+					UnderlyingType="Edm.Int32">
+				<Member Name="Any"/>
+				<Member Name="Nonnegative"/>
+			</EnumType>
+			<EnumType Name="AllowedLength"
+					UnderlyingType="Edm.Int32">
+				<Member Name="Fixed"/>
+				<Member Name="Variable"/>
+			</EnumType>
+			<EnumType Name="DateFractions"
+					UnderlyingType="Edm.Int32">
+				<Member Name="Date"/>
+				<Member Name="DateTime"/>
+				<Member Name="Time"/>
+			</EnumType>
+			<EnumType Name="AllowedLength"
+					UnderlyingType="Edm.Int32">
+				<Member Name="Fixed"/>
+				<Member Name="Variable"/>
+			</EnumType>
+			<EntityContainer Name="EnterpriseV8"
+					m:IsDefaultEntityContainer="true"/>
+		</Schema>
+	</edmx:DataServices>
+</edmx:Edmx>

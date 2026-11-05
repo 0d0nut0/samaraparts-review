@@ -1,0 +1,35 @@
+{% extends "admin_base.html" %}
+{% import "admin_macros.html" as m with context %}
+{% block title %}Админ — Прогноз закупок{% endblock %}
+{% block admin_content %}
+<h1 class="adm-h1 mb-2">Прогноз закупок</h1>
+<p class="adm-muted mb-6">Темп расхода — продажи за последние 30 дней; рекомендованный дозаказ — до 30-дневного запаса (минимум двойной порог для закончившихся позиций).</p>
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+    {{ m.stat("Закончились", counts.EMPTY ~ " поз.") }}
+    {{ m.stat("Закончатся < 7 дней / ниже порога", counts.HIGH ~ " поз.") }}
+    {{ m.stat("Хватит на 7–14 дней", counts.MEDIUM ~ " поз.") }}
+</div>
+
+<div class="adm-card overflow-x-auto">
+    <table class="w-full">
+        <thead><tr><th class="adm-th">Срочность</th><th class="adm-th">Товар</th><th class="adm-th">Остаток</th><th class="adm-th">Расход/день</th><th class="adm-th">Хватит на</th><th class="adm-th">Дозаказать</th><th class="adm-th">Поставщик</th></tr></thead>
+        <tbody>
+        {% for f in forecast %}
+        <tr>
+            <td class="adm-td"><span class="adm-badge {% if f.urgency == 'EMPTY' %}border-red-500/40 text-red-600{% elif f.urgency == 'HIGH' %}border-yellow-500/40 text-yellow-600{% else %}border-blue-500/40 text-blue-600{% endif %}">{{ f.urgency_label }}</span></td>
+            <td class="adm-td"><a class="hover:underline" href="/admin/products/{{ f.id }}">{{ f.name }}</a><div class="adm-muted font-mono">{{ f.sku }}</div></td>
+            <td class="adm-td font-mono">{{ f.stock_qty }} <span class="adm-muted">/ {{ f.threshold }}</span></td>
+            <td class="adm-td font-mono">{{ f.daily_burn }}</td>
+            <td class="adm-td font-mono">{{ (f.days_left ~ ' дн.') if f.days_left is not none else 'нет продаж' }}</td>
+            <td class="adm-td font-mono font-bold">+{{ f.recommended }}</td>
+            <td class="adm-td">{{ f.supplier or '—' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="adm-td text-center adm-muted py-8">Дефицита нет — все позиции укомплектованы.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% if forecast|length == 200 %}<p class="adm-muted mt-3">Показаны первые 200 позиций. Полный список — в «Экспорт CSV → Аналитика».</p>{% endif %}
+{% endblock %}

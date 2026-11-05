@@ -1,0 +1,33 @@
+{# Список обращений: на странице и как фрагмент для живого обновления (?partial=1) #}
+<div class="adm-card divide-y divide-line dark:divide-night-line">
+    {% for t in threads %}
+    {% set m = last.get(t.id) %}
+    <a href="/admin/chats/{{ t.id }}" class="flex items-start gap-4 px-4 py-3.5 hover:bg-paper dark:hover:bg-night transition {% if t.unread_staff %}bg-signal/10{% endif %}">
+        <span class="w-10 h-10 shrink-0 rounded-full bg-ink text-white dark:bg-night-text dark:text-night grid place-items-center font-bold">
+            {{ ((t.user.username if t.user else t.name) or 'Г')[0]|upper }}
+        </span>
+        <div class="flex-1 min-w-0">
+            <div class="flex items-baseline justify-between gap-3">
+                <span class="font-semibold truncate">
+                    {{ t.user.username if t.user else (t.name or 'Гость') }}
+                    {% if not t.user %}<span class="adm-muted font-normal">· гость</span>{% endif %}
+                    {% if t.phone %}<span class="adm-muted font-normal">· {{ t.phone }}</span>{% endif %}
+                </span>
+                <span class="adm-muted shrink-0 tabular-nums">{{ t.last_message_at.strftime('%d.%m %H:%M') }}</span>
+            </div>
+            <div class="mt-0.5 text-sm text-muted dark:text-night-muted truncate">
+                {% if m %}{% if m.sender == 'staff' %}Вы: {% endif %}{{ m.text }}{% else %}Нет сообщений{% endif %}
+            </div>
+            <div class="mt-1 adm-muted">{{ 'Ведёт: ' ~ t.manager.username if t.manager else 'Не назначено' }}</div>
+        </div>
+        {% if t.unread_staff %}
+        <span class="shrink-0 min-w-[24px] h-6 px-2 rounded-full bg-signal text-ink text-xs font-bold grid place-items-center tabular-nums">{{ t.unread_staff }}</span>
+        {% endif %}
+    </a>
+    {% else %}
+    <div class="px-4 py-12 text-center">
+        <p class="font-medium">{% if show == 'closed' %}Закрытых обращений нет{% else %}Новых обращений нет{% endif %}</p>
+        <p class="adm-muted mt-1">Покупатели пишут через кнопку «Чат с менеджером» на сайте. Список обновляется сам.</p>
+    </div>
+    {% endfor %}
+</div>

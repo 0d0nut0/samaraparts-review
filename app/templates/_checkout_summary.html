@@ -1,0 +1,15 @@
+{% import "_ui.html" as ui with context %}
+        <ul class="grid gap-3 max-h-72 overflow-y-auto pr-1">
+            {% for item in items %}
+            <li class="flex justify-between gap-3 text-sm">
+                <span class="min-w-0"><span class="line-clamp-2">{{ item.name }}</span><span class="hint tabular-nums">{{ item.qty }} × {{ ui.money(item.price) }}</span></span>
+                <span class="shrink-0 tabular-nums font-medium">{{ ui.money(item.sum) }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="mt-4 pt-4 border-t border-line dark:border-night-line flex justify-between items-baseline">
+            <span class="font-semibold">К оплате{% if request.state.user and request.state.user.is_wholesale %}, опт{% endif %}</span>
+            <span class="price text-[28px]">{{ ui.money(total) }}</span>
+        </div>
+        <p class="hint mt-2">Цена по тарифу Вашего аккаунта.</p>
+        {% if delivery_method == 'delivery' %}<p class="hint mt-2">Стоимость доставки менеджер согласует отдельно.</p>{% endif %}

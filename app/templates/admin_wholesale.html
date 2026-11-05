@@ -1,0 +1,39 @@
+{% extends "admin_base.html" %}
+{% block title %}Админ — Заявки на опт{% endblock %}
+{% block admin_content %}
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <h1 class="adm-h1">Заявки на оптовые цены</h1>
+    <div class="flex gap-2">
+        <a href="?show=pending" class="{{ 'adm-btn' if show == 'pending' else 'adm-btn-ghost' }}">Новые</a>
+        <a href="?show=all" class="{{ 'adm-btn' if show == 'all' else 'adm-btn-ghost' }}">Все</a>
+    </div>
+</div>
+
+<div class="adm-card overflow-x-auto">
+    <table class="w-full">
+        <thead><tr><th class="adm-th">№</th><th class="adm-th">Дата</th><th class="adm-th">Пользователь</th><th class="adm-th">Компания / комментарий</th><th class="adm-th">Статус</th><th class="adm-th"></th></tr></thead>
+        <tbody>
+        {% for a in applications %}
+        <tr>
+            <td class="adm-td font-mono">#{{ a.id }}</td>
+            <td class="adm-td font-mono text-xs">{{ a.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+            <td class="adm-td font-semibold">{{ a.user.username if a.user else a.user_id }}<div class="adm-muted">{{ role_labels[a.user.role.name] if a.user else '' }}</div></td>
+            <td class="adm-td whitespace-pre-line">{{ a.company_details }}</td>
+            <td class="adm-td">{{ application_labels[a.status.name] }}</td>
+            <td class="adm-td">
+                {% if a.status.name == 'PENDING' %}
+                <div class="flex gap-2">
+                    <form method="post" action="/admin/wholesale/{{ a.id }}/status"><input type="hidden" name="status" value="APPROVED"><button class="adm-btn" type="submit">Одобрить</button></form>
+                    <form method="post" action="/admin/wholesale/{{ a.id }}/status"><input type="hidden" name="status" value="REJECTED"><button class="adm-btn-danger" type="submit">Отклонить</button></form>
+                </div>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="adm-td text-center adm-muted py-8">Новых заявок нет — все обработаны.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<p class="adm-muted mt-3">Одобрение переводит покупателя в роль «Оптовый покупатель» — ему показываются оптовые цены. Заявку покупатель отправляет из личного кабинета.</p>
+{% endblock %}

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin</string>
+		<key>PYTHONUNBUFFERED</key>
+		<string>1</string>
+	</dict>
+	<key>Label</key>
+	<string>com.samaraparts.onec</string>
+	<key>ProcessType</key>
+	<string>Background</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/danil/PycharmProjects/PartsBot_New/.venv/bin/python</string>
+		<string>run_onec_sync.py</string>
+		<string>--apply</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/Users/danil/PycharmProjects/PartsBot_New/var/log/com.samaraparts.onec.error.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/danil/PycharmProjects/PartsBot_New/var/log/com.samaraparts.onec.log</string>
+	<key>StartInterval</key>
+	<integer>300</integer>
+	<key>WorkingDirectory</key>
+	<string>/Users/danil/PycharmProjects/PartsBot_New</string>
+</dict>
+</plist>

@@ -1,0 +1,2 @@
+1C source fetched 7033 products, 1 receipts
+{"source_products": 7033, "source_receipts": 1, "purchase_costs": 324, "ignored_purchase_documents": [], "created": 0, "linked_or_updated": 7033, "costs_applied": 324, "pricing": {"needs_cost": 5489, "moba": 1370, "stale_moba": 5, "estimated": 179}, "priced_products": 1554, "super_prices": 324, "applied": false, "changed_price_rows": 3432, "price_types": {"retail": "15c54614-d825-11f1-a2af-00155d01c829", "wholesale": "missing:ОПТ", "super_wholesale": "missing:СуперОПТ"}}

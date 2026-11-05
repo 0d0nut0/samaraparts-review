@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Вход — ПАРТС{% endblock %}
+{% block content %}
+<div class="max-w-sm mx-auto sm:mt-6">
+    <h1 class="text-2xl font-extrabold tracking-tight">Вход</h1>
+    <p class="mt-1 text-muted dark:text-night-muted">Чтобы оформлять заказы и видеть их историю.</p>
+
+    {% if request.query_params.get('verified') %}<p class="mt-5 text-sm stock-ok" role="status">E-mail подтверждён. Войдите в аккаунт.</p>{% endif %}
+    {% if error %}
+    <div class="mt-5 rounded-lg border border-red-500/40 bg-red-50 dark:bg-red-500/10 px-3.5 py-2.5 text-sm text-red-700 dark:text-red-300" role="alert">{{ error }}</div>
+    {% endif %}
+
+    <form action="/auth/login" method="post" class="mt-6 grid gap-4">
+        <input type="hidden" name="next" value="{{ next or '' }}">
+        <div>
+            <label class="label" for="username">Имя пользователя</label>
+            <input class="field" id="username" type="text" name="username" required autocomplete="username" value="{{ username or '' }}" {% if not username %}autofocus{% endif %}>
+        </div>
+        <div>
+            <label class="label" for="password">Пароль</label>
+            <div class="relative">
+                <input class="field pr-24" id="password" type="password" name="password" required autocomplete="current-password" {% if username %}autofocus{% endif %}>
+                <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-sm font-medium text-muted hover:text-ink px-2 py-1" onclick="const p=document.getElementById('password');p.type=p.type==='password'?'text':'password';this.textContent=p.type==='password'?'Показать':'Скрыть'">Показать</button>
+            </div>
+        </div>
+        <button type="submit" class="btn-primary w-full mt-1">Войти</button>
+        <a href="/auth/forgot" class="text-sm link justify-self-start -mt-1">Забыли пароль?</a>
+    </form>
+    {% if seo.bot_link() %}
+    <a href="/auth/telegram{{ '?next=' ~ (next|urlencode) if next else '' }}" class="btn w-full mt-3 bg-[#2AABEE] text-white hover:bg-[#229ED9]">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.9 4.3 18.6 20c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.2-8.3c.4-.4-.1-.6-.6-.2L6 13.6 1.1 12c-1.1-.3-1.1-1.1.2-1.6L20.5 3c.9-.3 1.7.2 1.4 1.3z"/></svg>
+        Войти через Telegram — без пароля
+    </a>
+    {% endif %}
+    <p class="mt-4 text-sm"><a href="/auth/resend-verification" class="link">Не пришло письмо подтверждения?</a></p>
+    <p class="mt-6 text-sm text-muted dark:text-night-muted">Нет аккаунта? <a href="/auth/register{{ '?next=' ~ (next|urlencode) if next else '' }}" class="link font-semibold">Зарегистрироваться</a></p>
+</div>
+{% endblock %}

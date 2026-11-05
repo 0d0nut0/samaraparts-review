@@ -1,0 +1,5 @@
+{% extends "admin_base.html" %}
+{% block title %}Правила цен{% endblock %}
+{% block admin_content %}<h1 class="adm-h1">Правила цен</h1>
+<div class="adm-card p-6 mt-6"><p>ОПТ = обычная розничная цена Moba.</p><p>Розница = ОПТ × 1,20.</p><p>СуперОПТ = максимум из ОПТ × 0,90 и закупки × 1,15.</p><p class="adm-muted mt-3">Продажа — в целых рублях. Нижняя граница закупки округляется вверх. Без закупки суперопт не рассчитывается; для такого аккаунта действует ОПТ. Тариф назначается администратором в разделе «Пользователи».</p>
+<form action="/admin/settings" method="post" class="mt-4"><button class="adm-btn" name="recalculate" value="1">Пересчитать связанные цены</button></form></div>{% endblock %}

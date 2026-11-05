@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% import "_ui.html" as ui with context %}
+{% block title %}{{ moba_price.name }} — купить в {{ shop.cities_in }} | ПАРТС{% endblock %}
+{% block description %}{% set bp0 = buyer_prices(moba_price, false) %}{{ moba_price.name }}, артикул {{ sku }}. {% if bp0.price is not none %}Цена {{ "{:,.0f}".format(bp0.price).replace(",", " ") }} ₽. {% endif %}Наличие на складе в {{ shop.cities_in }}, самовывоз и доставка, опт для сервисных центров.{% endblock %}
+{% block og_type %}product{% endblock %}
+{% block og_image %}{% if moba_price.image %}<meta property="og:image" content="{{ moba_price.image if moba_price.image.startswith('http') else seo.absolute(moba_price.image) }}">{% else %}{{ super() }}{% endif %}{% endblock %}
+{% block head %}
+{% set bp0 = buyer_prices(moba_price, false) %}{% set total0 = namespace(n=0) %}{% for stock, c in stocks %}{% set total0.n = total0.n + stock.quantity %}{% endfor %}
+{{ seo.product(moba_price, bp0.price, total0.n > 0, path, moba_price.image) }}
+{{ seo.breadcrumbs(seo.crumbs(path) + [(moba_price.name, "/catalog/" ~ sku)]) }}
+{% endblock %}
+
+{% block content %}
+{% set bp = buyer_prices(moba_price, wholesale, authenticated=(request.state.user is not none), price_type=(request.state.user.effective_price_type if request.state.user else none)) %}{% set price = bp.price %}
+{% set in_city = namespace(city=0, total=0) %}
+{% for stock, c in stocks %}{% set in_city.total = in_city.total + stock.quantity %}{% if city and c.id == city.id %}{% set in_city.city = stock.quantity %}{% endif %}{% endfor %}
+
+<nav class="mb-5 text-sm text-muted dark:text-night-muted flex flex-wrap items-center gap-1.5" aria-label="Вы здесь">
+    <a href="/catalog" class="hover:text-ink dark:hover:text-night-text">Каталог</a>
+    {% for n in path %}<span aria-hidden="true">/</span><a href="/catalog?cat={{ n.slug }}" class="hover:text-ink dark:hover:text-night-text">{{ n.name }}</a>{% endfor %}
+</nav>
+
+<div class="grid lg:grid-cols-[1fr_380px] gap-6 lg:gap-10 items-start">
+    <div class="min-w-0">
+        <div class="flex items-start gap-4">
+            {% if not moba_price.image %}
+            <span class="w-16 h-16 shrink-0 rounded-xl bg-white dark:bg-night-surface border border-line dark:border-night-line grid place-items-center text-ink/70 dark:text-night-muted">{{ ui.part_icon(moba_price.name, 'w-9 h-9') }}</span>
+            {% endif %}
+            <div class="min-w-0">
+                <h1 class="text-2xl sm:text-[28px] font-bold leading-tight tracking-tight">{{ moba_price.name }}</h1>
+                <button type="button" class="mt-2 inline-flex items-center gap-1.5 sku text-[13px] hover:text-ink dark:hover:text-night-text"
+                        onclick="navigator.clipboard && navigator.clipboard.writeText('{{ sku|e }}').then(() => toast('Артикул скопирован'))"
+                        title="Скопировать артикул">
+                    {{ sku }}
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+                </button>
+            </div>
+        </div>
+
+        {% if moba_price.image %}
+        <figure class="mt-6 card p-4 bg-white">
+            <img src="{{ moba_price.image }}" alt="{{ moba_price.name }}" class="mx-auto max-h-[420px] w-auto object-contain">
+        </figure>
+        {% endif %}
+
+        <section class="mt-8" aria-labelledby="stock-title">
+            <h2 id="stock-title" class="text-lg font-bold mb-3">Наличие</h2>
+            <div class="card divide-y divide-line dark:divide-night-line">
+                {% for stock, c in stocks %}
+                <div class="flex items-center justify-between gap-4 px-4 py-3 {% if city and c.id == city.id %}bg-signal/10{% endif %}">
+                    <span class="font-medium">{{ c.name }}{% if city and c.id == city.id %} <span class="hint font-normal">— ваш город</span>{% endif %}</span>
+                    {% if stock.quantity > 0 %}
+                    <span class="stock-ok font-semibold tabular-nums">{{ stock.quantity }} шт.</span>
+                    {% else %}
+                    <span class="stock-no">нет</span>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="px-4 py-3 text-muted">Нет данных об остатках — уточните по телефону <a class="link" href="{{ shop_contact(request.state.city).phone_href }}">{{ shop_contact(request.state.city).phone }}</a>.</div>
+                {% endfor %}
+            </div>
+            {% if in_city.city == 0 and in_city.total > 0 %}
+            <p class="hint mt-2">В вашем городе нет, но есть на другом складе — выберите его город при оформлении заказа.</p>
+            {% endif %}
+        </section>
+
+        {% if (product and product.description) or specs %}
+        <section class="mt-8" aria-labelledby="about-title">
+            <h2 id="about-title" class="text-lg font-bold mb-3">О товаре</h2>
+            {% if product and product.description %}<p class="max-w-prose leading-relaxed text-ink/90 dark:text-night-text/90">{{ product.description }}</p>{% endif %}
+            {% if specs %}
+            <dl class="mt-4 card divide-y divide-line dark:divide-night-line text-sm">
+                {% for spec in specs %}
+                <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-4 px-4 py-2.5"><dt class="text-muted dark:text-night-muted">{{ spec.key }}</dt><dd>{{ spec.value }}</dd></div>
+                {% endfor %}
+            </dl>
+            {% endif %}
+        </section>
+        {% endif %}
+    </div>
+
+    <!-- Покупка -->
+    <aside class="card p-5 lg:sticky lg:top-24" aria-label="Покупка">
+        {% if price is none %}
+        <div class="text-2xl font-bold">Цена по запросу</div>
+        <p class="hint mt-1">Товар есть в поставке — менеджер назовёт цену и зарезервирует его.</p>
+        <div class="mt-4 text-sm">{{ ui.stock_line(in_city if stocks else none, city) }}</div>
+        <button type="button" class="btn-primary w-full mt-5" onclick='openChat({{ ("Подскажите цену: " ~ moba_price.name ~ " (" ~ sku ~ ")")|tojson }})'>Узнать цену в чате</button>
+        <a href="{{ shop_contact(request.state.city).phone_href }}" class="btn-quiet w-full mt-1">или позвонить: {{ shop_contact(request.state.city).phone }}</a>
+        {% else %}
+        <div class="flex items-baseline gap-2">
+            <span class="price text-[32px] leading-none">{{ ui.money(price) }}</span>
+            {% if bp.wholesale %}<span class="hint">оптовая цена</span>{% endif %}
+        </div>
+        <div class="mt-3 text-sm">
+            {% if request.state.user %}
+            <p>Ваша цена действует при самовывозе и доставке.</p>
+        {% endif %}
+        </div>
+
+        <div class="mt-4 text-sm">{{ ui.stock_line(in_city if stocks else none, city) }}</div>
+
+        {% if in_city.total == 0 %}
+        <div class="mt-5 rounded-lg bg-paper dark:bg-night px-4 py-3 text-sm">Сейчас нет на складе. Привезём под заказ — менеджер подскажет срок.</div>
+        <button type="button" class="btn-primary w-full mt-3" onclick='openChat({{ ("Под заказ: " ~ moba_price.name ~ " (" ~ sku ~ "). Когда будет?")|tojson }})'>Заказать под поставку</button>
+        {% else %}
+        <form id="buy-form" class="mt-5 flex gap-2" hx-post="/cart/add" hx-swap="none" data-add-to-cart data-name="{{ moba_price.name[:60] }}">
+            <input type="hidden" name="sku" value="{{ sku }}">
+            <div class="flex items-center rounded-lg border border-line dark:border-night-line">
+                <button type="button" class="w-10 h-11 text-lg text-muted hover:text-ink" onclick="step(-1)" aria-label="Меньше">−</button>
+                <label class="sr-only" for="qty">Количество</label>
+                <input id="qty" type="number" name="qty" value="1" min="1" max="999" inputmode="numeric"
+                       class="w-12 h-11 text-center bg-transparent font-semibold tabular-nums focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none">
+                <button type="button" class="w-10 h-11 text-lg text-muted hover:text-ink" onclick="step(1)" aria-label="Больше">+</button>
+            </div>
+            <button type="submit" class="btn-primary flex-1" data-done="✓ Добавлено">В корзину</button>
+        </form>
+        {% endif %}
+        <a href="/cart" class="mt-2 btn-quiet w-full">Перейти в корзину</a>
+        <button type="button" class="btn-quiet w-full" onclick='openChat({{ ("Вопрос по товару: " ~ moba_price.name ~ " (" ~ sku ~ ")
+")|tojson }})'>Спросить менеджера о товаре</button>
+        {% endif %}
+
+        <ul class="mt-4 pt-4 border-t border-line dark:border-night-line grid gap-1.5 text-[13px] text-muted dark:text-night-muted">
+            <li>Самовывоз: {{ shop.cities|join(", ") }}</li>
+            <li><a href="/delivery" class="link">Доставка</a> по городу и транспортными компаниями</li>
+            <li><a href="/warranty" class="link">Проверка и возврат</a> при получении</li>
+        </ul>
+    </aside>
+</div>
+
+{% if related %}
+<section class="mt-14" aria-labelledby="related-title">
+    <h2 id="related-title" class="text-xl font-bold mb-4">Из той же категории</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {% for r in related %}{{ ui.product_card(r, related_stocks.get(r.sku), city, wholesale) }}{% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% if price is not none %}
+<!-- Мобильная панель покупки -->
+<div data-bottom-bar class="lg:hidden fixed inset-x-0 bottom-0 z-20 bg-white/95 dark:bg-night-surface/95 backdrop-blur border-t border-line dark:border-night-line px-4 py-3 flex items-center gap-3">
+    <div class="min-w-0">
+        <div class="price text-lg leading-none">{{ ui.money(price) }}</div>
+        <div class="text-xs mt-1 truncate">{{ ui.stock_line(in_city if stocks else none, city) }}</div>
+    </div>
+    {% if in_city.total > 0 %}
+    <button type="button" class="btn-primary ml-auto" onclick="htmx.trigger('#buy-form', 'submit')">В корзину</button>
+    {% else %}
+    <button type="button" class="btn-primary ml-auto" onclick='openChat({{ ("Под заказ: " ~ moba_price.name ~ " (" ~ sku ~ "). Когда будет?")|tojson }})'>Под заказ</button>
+    {% endif %}
+</div>
+<div class="h-16 lg:hidden"></div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function step(d) {
+        const el = document.getElementById('qty');
+        el.value = Math.max(1, Math.min(999, (parseInt(el.value, 10) || 1) + d));
+    }
+</script>
+{% endblock %}

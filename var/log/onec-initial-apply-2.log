@@ -1,0 +1,21 @@
+1C source fetched 7033 products, 1 receipts
+Traceback (most recent call last):
+  File "/Users/danil/PycharmProjects/PartsBot_New/run_onec_sync.py", line 179, in <module>
+    main()
+  File "/Users/danil/PycharmProjects/PartsBot_New/run_onec_sync.py", line 167, in main
+    report['documents'] = return_prices(client, rows, rub=source['rub'], folder=folder,
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danil/PycharmProjects/PartsBot_New/run_onec_sync.py", line 96, in return_prices
+    document = existing[0] if existing else client.write(PRICE_DOC, price_document(batch, comment=comment, price_table=price_table))
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/danil/PycharmProjects/PartsBot_New/app/services/onec_odata.py", line 77, in write
+    raise RuntimeError(f'1C {method} {resource}: {response.status_code}: {response.text[:1800]}')
+RuntimeError: 1C POST Document_УстановкаЦенНоменклатуры: 400: {
+"odata.error": {
+"code": "4",
+"message": {
+"lang": "ru",
+"value": "Перечисление 'СтатусыУстановокЦенНоменклатуры' не содержит элемент 'Действует'."
+}
+}
+}

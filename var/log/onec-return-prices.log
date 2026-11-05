@@ -1,0 +1,5 @@
+1C price document verified 00-00000001 rows 1000
+1C price document verified 00-00000002 rows 1000
+1C price document verified 00-00000003 rows 1000
+1C price document verified 00-00000004 rows 432
+[{'id': 'dcd845b9-d889-11f1-a2af-00155d01c829', 'number': '00-00000001', 'rows': 1000}, {'id': 'dcd845bc-d889-11f1-a2af-00155d01c829', 'number': '00-00000002', 'rows': 1000}, {'id': 'dcd845bd-d889-11f1-a2af-00155d01c829', 'number': '00-00000003', 'rows': 1000}, {'id': 'dcd845be-d889-11f1-a2af-00155d01c829', 'number': '00-00000004', 'rows': 432}]

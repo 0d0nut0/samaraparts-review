@@ -1,0 +1,26 @@
+{
+  "fingerprint": "d53d09e61b01e2f8b9d75fa06555f5373b2f3a168808533fd73b8a0daf820a8d",
+  "completed_at": "2026-11-05T07:38:54.628060+00:00",
+  "summary": {
+    "source_products": 7033,
+    "source_receipts": 1,
+    "purchase_costs": 324,
+    "ignored_purchase_documents": [],
+    "source_unchanged": true,
+    "priced_products": 1553,
+    "super_prices": 324,
+    "stock_changed_rows": 0,
+    "stock_units": 907,
+    "stock_positive_rows": 324,
+    "local_held_units": 0,
+    "applied": true,
+    "changed_price_rows": 0,
+    "price_types": {
+      "retail": "15c54614-d825-11f1-a2af-00155d01c829",
+      "wholesale": "dcd845b7-d889-11f1-a2af-00155d01c829",
+      "super_wholesale": "dcd845b8-d889-11f1-a2af-00155d01c829"
+    },
+    "documents": [],
+    "verified": true
+  }
+}

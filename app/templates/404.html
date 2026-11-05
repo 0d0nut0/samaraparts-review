@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ title or "Страница не найдена" }} — ПАРТС{% endblock %}
+{% block content %}
+<div class="max-w-lg mx-auto sm:mt-10 text-center">
+    <div class="inline-block rounded-md bg-signal text-ink px-3 py-1 font-mono font-medium text-sm">Ошибка {{ code or 404 }}</div>
+    <h1 class="mt-4 text-2xl sm:text-3xl font-extrabold tracking-tight">{{ title or "Страница не найдена" }}</h1>
+    <p class="mt-2 text-muted dark:text-night-muted">{{ detail or "Ссылка устарела или товар снят с продажи. Попробуйте найти деталь поиском." }}</p>
+    {% if (code or 404) == 404 %}
+    <form action="/catalog" method="get" role="search" class="mt-6 flex gap-2">
+        <label class="sr-only" for="q404">Поиск</label>
+        <input id="q404" type="search" name="q" class="field" placeholder="Модель и деталь или артикул" data-suggest="/catalog/suggest" autocomplete="off">
+        <button class="btn-primary">Найти</button>
+    </form>
+    {% endif %}
+    <a href="/catalog" class="inline-block mt-6 link font-semibold">Перейти в каталог</a>
+</div>
+{% endblock %}

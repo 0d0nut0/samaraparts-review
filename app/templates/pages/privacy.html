@@ -1,0 +1,9 @@
+{% extends "pages/_layout.html" %}
+{% block page_body %}
+{% for title, blocks in legal.sections() %}
+<h2>{{ title }}</h2>
+{% for b in blocks %}
+{% if b is string %}<p>{{ b }}</p>{% else %}<ul>{% for li in b %}<li>{{ li }}</li>{% endfor %}</ul>{% endif %}
+{% endfor %}
+{% endfor %}
+{% endblock %}

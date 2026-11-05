@@ -1,0 +1,11 @@
+tunnel: ea992cfb-1ea2-4446-936e-7c71424b397c
+credentials-file: /Users/danil/.cloudflared/ea992cfb-1ea2-4446-936e-7c71424b397c.json
+protocol: http2
+ingress:
+  - hostname: samaraparts.com
+    service: http://127.0.0.1:8000
+  - hostname: www.samaraparts.com
+    service: http://127.0.0.1:8000
+  - service: http_status:404
+
+metrics: 127.0.0.1:20241

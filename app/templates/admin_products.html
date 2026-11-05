@@ -1,0 +1,50 @@
+{% extends "admin_base.html" %}
+{% import "admin_macros.html" as m with context %}
+{% block title %}Админ — Товары{% endblock %}
+{% block admin_content %}
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <h1 class="adm-h1">Товары <span class="adm-muted font-mono text-base">({{ total }})</span></h1>
+    <div class="flex flex-wrap gap-2">
+        <a href="/admin/products/new" class="adm-btn">+ Новый товар</a>
+        <a href="/admin/products/receive" class="adm-btn-ghost">Приход</a>
+        <a href="/admin/products/writeoff" class="adm-btn-ghost">Списание</a>
+    </div>
+</div>
+
+<form method="get" class="flex flex-wrap gap-2 mb-6">
+    <input type="text" name="q" value="{{ q }}" placeholder="Артикул или название" class="adm-input !w-72">
+    <select name="show" class="adm-input !w-auto">
+        <option value="active" {% if show == 'active' %}selected{% endif %}>В каталоге</option>
+        <option value="low" {% if show == 'low' %}selected{% endif %}>Низкий остаток</option>
+        <option value="hidden" {% if show == 'hidden' %}selected{% endif %}>Скрытые</option>
+    </select>
+    <button class="adm-btn-ghost" type="submit">Найти</button>
+</form>
+
+<div class="adm-card overflow-x-auto">
+    <table class="w-full">
+        <thead>
+            <tr>
+                <th class="adm-th">Артикул</th><th class="adm-th">Название</th><th class="adm-th">Себест.</th>
+                <th class="adm-th">Розница</th><th class="adm-th">Опт</th><th class="adm-th">Остаток</th><th class="adm-th"></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for p, qty, base, opt in rows %}
+        <tr class="hover:bg-purple-50/40 dark:hover:bg-white/5">
+            <td class="adm-td font-mono text-xs">{{ p.sku }}</td>
+            <td class="adm-td">{{ p.name }}{% if not p.is_active %} <span class="adm-badge border-gray-500/30 text-gray-500">скрыт</span>{% endif %}</td>
+            <td class="adm-td font-mono">{{ m.money(p.purchase_price) if p.purchase_price is not none else '—' }}</td>
+            <td class="adm-td font-mono">{{ m.money(base) if base is not none else '—' }}</td>
+            <td class="adm-td font-mono">{{ m.money(opt) if opt is not none else '—' }}</td>
+            <td class="adm-td font-mono font-bold {% if qty <= p.critical_stock_threshold %}text-red-600 dark:text-red-400{% else %}text-green-600 dark:text-green-400{% endif %}">{{ qty }}</td>
+            <td class="adm-td text-right"><a href="/admin/products/{{ p.id }}" class="text-purple-600 dark:text-purple-400 font-semibold hover:underline">Изменить</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="adm-td text-center adm-muted py-8">Товары не найдены</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{{ m.pagination(page, pages, '&q=' ~ (q|urlencode) ~ '&show=' ~ show) }}
+{% endblock %}

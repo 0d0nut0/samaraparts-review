@@ -1,0 +1,66 @@
+{% extends "admin_base.html" %}
+{% import "admin_macros.html" as m with context %}
+{% block title %}Админ — Движение товара{% endblock %}
+{% block admin_content %}
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <h1 class="adm-h1">Движение товара</h1>
+    <div class="flex gap-2">
+        <a href="/admin/products/receive" class="adm-btn">Приход</a>
+        <a href="/admin/products/writeoff" class="adm-btn-ghost">Списание</a>
+        <a href="/admin/export/movements.csv" class="adm-btn-ghost">CSV (60 дней)</a>
+    </div>
+</div>
+
+<div class="adm-card overflow-x-auto mb-8">
+    <div class="flex flex-wrap items-center justify-between gap-3 px-4 pt-4 pb-2">
+        <h3 class="font-bold text-gray-900 dark:text-white">Сводка по товарам за {{ days }} дней</h3>
+        <div class="flex gap-1">
+            {% for d in (7, 30, 90) %}<a href="?days={{ d }}&type={{ type }}" class="{{ 'adm-btn' if d == days else 'adm-btn-ghost' }} !py-1 !px-3">{{ d }} д.</a>{% endfor %}
+        </div>
+    </div>
+    <table class="w-full">
+        <thead><tr><th class="adm-th">Товар</th><th class="adm-th">Приход</th><th class="adm-th">Расход</th><th class="adm-th">Последняя операция</th></tr></thead>
+        <tbody>
+        {% for r in report[:50] %}
+        <tr>
+            <td class="adm-td"><a class="font-semibold hover:underline" href="/admin/products/{{ r.id }}">{{ r.name }}</a><div class="adm-muted font-mono">{{ r.sku }}</div></td>
+            <td class="adm-td font-mono text-green-600">+{{ r.inflow }}</td>
+            <td class="adm-td font-mono text-red-600">−{{ r.outflow }}</td>
+            <td class="adm-td font-mono text-xs">{{ r.last_date.strftime('%d.%m.%Y %H:%M') }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="adm-td text-center adm-muted py-6">Нет движений за период</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="flex flex-wrap gap-2 mb-4">
+    <a href="?type=all&days={{ days }}" class="{{ 'adm-btn' if type == 'all' else 'adm-btn-ghost' }}">Все</a>
+    {% for t in TransactionType %}
+    <a href="?type={{ t.name }}&days={{ days }}" class="{{ 'adm-btn' if type == t.name else 'adm-btn-ghost' }}">{{ transaction_labels[t.name] }}</a>
+    {% endfor %}
+</div>
+
+<div class="adm-card overflow-x-auto">
+    <table class="w-full">
+        <thead><tr><th class="adm-th">Дата</th><th class="adm-th">Операция</th><th class="adm-th">Товар</th><th class="adm-th">Кол-во</th><th class="adm-th">Склад</th><th class="adm-th">Детали</th><th class="adm-th">Сотрудник</th></tr></thead>
+        <tbody>
+        {% for t in transactions %}
+        <tr>
+            <td class="adm-td font-mono text-xs whitespace-nowrap">{{ t.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+            <td class="adm-td">{{ transaction_labels[t.type.name] }}</td>
+            <td class="adm-td">{% if t.product %}<a class="hover:underline" href="/admin/products/{{ t.product.id }}">{{ t.product.name }}</a>{% else %}#{{ t.product_id }}{% endif %}</td>
+            <td class="adm-td font-mono font-bold {% if t.quantity > 0 %}text-green-600{% else %}text-red-600{% endif %}">{% if t.quantity > 0 %}+{% endif %}{{ t.quantity }}</td>
+            <td class="adm-td">{{ (t.to_city or t.from_city).name if (t.to_city or t.from_city) else '—' }}</td>
+            <td class="adm-td adm-muted">{{ t.notes or '' }}{% if t.supplier %} · {{ t.supplier.name }}{% endif %}{% if t.unit_cost %} · {{ m.money(t.unit_cost) }}/шт{% endif %}</td>
+            <td class="adm-td">{{ t.user.username if t.user else '—' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="adm-td text-center adm-muted py-8">Нет записей о движениях</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{{ m.pagination(page, pages, '&type=' ~ type ~ '&days=' ~ days) }}
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "admin_base.html" %}
+{% block title %}Админ — Списание{% endblock %}
+{% block admin_content %}
+<h1 class="adm-h1 mb-6">Списание товара</h1>
+
+<form method="post" action="/admin/products/writeoff" class="adm-card p-6 max-w-2xl grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div class="md:col-span-2">
+        <label class="adm-label">Товар (артикул или поиск по ключевым словам)</label>
+        <input type="text" name="article" value="{{ article or '' }}" required autocomplete="off" data-suggest="/admin/api/suggest" data-suggest-pick="sku" class="adm-input font-mono" placeholder="Артикул или запрос: «iPhone 11 дисплей», «realme c67 акб»">
+    </div>
+    <div>
+        <label class="adm-label">Количество, шт.</label>
+        <input type="number" name="quantity" min="1" required class="adm-input font-mono">
+    </div>
+    <div>
+        <label class="adm-label">Склад (город)</label>
+        <select name="city_id" required class="adm-input">
+            {% for c in cities %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="md:col-span-2">
+        <label class="adm-label">Причина (брак, инвентаризация, …)</label>
+        <input type="text" name="notes" class="adm-input" maxlength="500">
+    </div>
+    <div class="md:col-span-2">
+        <button type="submit" class="adm-btn-danger">Списать</button>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends "admin_base.html" %}
+{% import "_ui.html" as ui with context %}
+{% block title %}Админ — Обращение № {{ thread.id }}{% endblock %}
+{% block admin_content %}
+{% set client = thread.user.username if thread.user else (thread.name or 'Гость') %}
+<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <div>
+        <a href="/admin/chats" class="text-sm link">← Все обращения</a>
+        <h1 class="adm-h1 mt-1">{{ client }}</h1>
+    </div>
+    <div class="flex flex-wrap gap-2">
+        <a href="/admin/orders/new?thread={{ thread.id }}" class="adm-btn">Оформить заказ</a>
+        {% if thread.assigned_to != user.id %}
+        <form method="post" action="/admin/chats/{{ thread.id }}/assign"><button class="adm-btn-ghost">Взять себе</button></form>
+        {% endif %}
+        {% if thread.status.name == 'OPEN' %}
+        <form method="post" action="/admin/chats/{{ thread.id }}/status"><input type="hidden" name="status" value="CLOSED"><button class="adm-btn-ghost">Закрыть обращение</button></form>
+        {% else %}
+        <form method="post" action="/admin/chats/{{ thread.id }}/status"><input type="hidden" name="status" value="OPEN"><button class="adm-btn-ghost">Открыть снова</button></form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="grid xl:grid-cols-[1fr_320px] gap-5 items-start">
+    <section class="adm-card flex flex-col h-[calc(100vh-14rem)] min-h-[480px] overflow-hidden">
+        <div id="log" class="flex-1 overflow-y-auto px-4 py-4 space-y-2 bg-paper dark:bg-night" aria-live="polite"></div>
+        <div class="border-t border-line dark:border-night-line p-3 grid gap-2">
+            <div class="flex flex-wrap gap-1.5">
+                {% for r in quick_replies %}
+                <button type="button" class="chip h-7 text-[13px]" data-quick="{{ r }}">{{ r[:38] }}{% if r|length > 38 %}…{% endif %}</button>
+                {% endfor %}
+            </div>
+            <div class="relative">
+                <label class="sr-only" for="product-q">Отправить ссылку на товар</label>
+                <input id="product-q" class="adm-input" placeholder="Найти товар и отправить ссылку: «iPhone 11 дисплей», артикул…"
+                       autocomplete="off" data-suggest="/admin/api/suggest" data-suggest-pick="sku">
+            </div>
+            <form id="send" class="flex items-end gap-2">
+                <label class="sr-only" for="text">Ответ</label>
+                <textarea id="text" rows="2" maxlength="2000" class="adm-input resize-none" placeholder="Ответ покупателю. Enter — отправить, Shift+Enter — перенос строки"></textarea>
+                <button class="adm-btn h-11">Отправить</button>
+            </form>
+            <p id="err" class="hidden text-sm text-red-600"></p>
+        </div>
+    </section>
+
+    <aside class="grid gap-4">
+        <div class="adm-card p-4 text-sm grid gap-1.5">
+            <h2 class="font-bold mb-1">Покупатель</h2>
+            <div><span class="adm-muted">Аккаунт:</span> {{ thread.user.username if thread.user else 'гость, без регистрации' }}
+                {% if thread.user and thread.user.is_wholesale %}<span class="adm-badge border-purple-500/40 text-purple-600">опт</span>{% endif %}</div>
+            {% if thread.name %}<div><span class="adm-muted">Имя:</span> {{ thread.name }}</div>{% endif %}
+            {% if thread.phone %}<div><span class="adm-muted">Телефон:</span> <a class="link" href="tel:{{ thread.phone }}">{{ thread.phone }}</a></div>{% endif %}
+            {% if thread.last_page %}<div class="truncate"><span class="adm-muted">Писал со страницы:</span> <a class="link" href="{{ thread.last_page }}" target="_blank">{{ thread.last_page }}</a></div>{% endif %}
+            <div><span class="adm-muted">Ведёт:</span> {{ thread.manager.username if thread.manager else 'не назначено' }}</div>
+            <div><span class="adm-muted">Статус:</span> {{ 'открыто' if thread.status.name == 'OPEN' else 'закрыто' }}</div>
+        </div>
+
+        {% if thread.user %}
+        <div class="adm-card p-4 text-sm">
+            <h2 class="font-bold mb-2">Корзина</h2>
+            {% for qty, p in cart_rows %}
+            <div class="flex justify-between gap-3 py-1"><a class="truncate hover:underline" href="/catalog/{{ p.sku|urlencode }}" target="_blank">{{ p.name }}</a><span class="shrink-0 tabular-nums">{{ qty }} шт.</span></div>
+            {% else %}
+            <p class="adm-muted">Пусто</p>
+            {% endfor %}
+        </div>
+        <div class="adm-card p-4 text-sm">
+            <h2 class="font-bold mb-2">Последние заказы</h2>
+            {% for o in orders %}
+            <a href="/admin/orders/{{ o.id }}" class="flex justify-between gap-3 py-1 hover:underline">
+                <span>№ {{ o.id }} от {{ o.created_at.strftime('%d.%m') }} · {{ status_labels[o.status.name] }}</span>
+                <span class="tabular-nums">{{ ui.money(o.total_amount) }}</span>
+            </a>
+            {% else %}
+            <p class="adm-muted">Заказов нет</p>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="adm-card p-4 text-sm adm-muted">Гость не зарегистрирован — корзина и заказы недоступны. Попросите телефон или предложите зарегистрироваться, чтобы оформить заказ.</div>
+        {% endif %}
+    </aside>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    const log = document.getElementById('log'), text = document.getElementById('text'), err = document.getElementById('err');
+    const url = '/admin/api/chats/{{ thread.id }}';
+    let lastId = 0;
+
+    function bubble(m) {
+        const mine = m.sender === 'staff';
+        const row = document.createElement('div');
+        row.className = 'flex ' + (m.sender === 'system' ? 'justify-center' : mine ? 'justify-end' : 'justify-start');
+        const b = document.createElement('div');
+        b.className = m.sender === 'system' ? 'text-xs text-muted'
+            : 'max-w-[75%] rounded-2xl px-3.5 py-2 text-[15px] leading-snug whitespace-pre-wrap break-words ' +
+              (mine ? 'bg-ink text-white dark:bg-night-text dark:text-night rounded-br-md' : 'bg-white dark:bg-night-surface border border-line dark:border-night-line rounded-bl-md');
+        b.textContent = m.text;
+        if (m.sender !== 'system') {
+            const meta = document.createElement('div');
+            meta.className = 'mt-1 text-[11px] opacity-60 ' + (mine ? 'text-right' : '');
+            meta.textContent = (mine ? (m.author || 'менеджер') + ', ' : '') + m.date + ' ' + m.time;
+            b.appendChild(meta);
+        }
+        row.appendChild(b);
+        log.appendChild(row);
+    }
+
+    async function poll() {
+        try {
+            const d = await (await fetch(`${url}/messages?after=${lastId}`)).json();
+            const atBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 80;
+            d.messages.forEach(m => { if (m.id > lastId) { bubble(m); lastId = m.id; } });
+            if (d.messages.length && (atBottom || lastId === d.messages[d.messages.length - 1].id && log.childElementCount === d.messages.length)) log.scrollTop = log.scrollHeight;
+        } catch (e) {}
+    }
+
+    async function send(value) {
+        value = (value || '').trim();
+        if (!value) return;
+        err.classList.add('hidden');
+        const r = await fetch(`${url}/send`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({text: value})});
+        const d = await r.json();
+        if (!d.ok) { err.textContent = d.error || 'Не удалось отправить'; err.classList.remove('hidden'); return; }
+        if (d.message.id > lastId) { bubble(d.message); lastId = d.message.id; }
+        log.scrollTop = log.scrollHeight;
+    }
+
+    document.getElementById('send').addEventListener('submit', async e => { e.preventDefault(); await send(text.value); text.value = ''; text.focus(); });
+    text.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('send').requestSubmit(); } });
+    document.querySelectorAll('[data-quick]').forEach(b => b.addEventListener('click', () => { text.value = b.dataset.quick; text.focus(); }));
+
+    // Ссылка на товар: выбор в подсказках подставляет в ответ название и адрес карточки
+    document.getElementById('product-q').addEventListener('suggest:pick', e => {
+        const it = e.detail;
+        text.value = (text.value ? text.value + '\n' : '') + it.name + '\n' + location.origin + '/catalog/' + encodeURIComponent(it.sku);
+        e.target.value = '';
+        text.focus();
+    });
+
+    poll().then(() => { log.scrollTop = log.scrollHeight; });
+    setInterval(() => { if (!document.hidden) poll(); }, 3000);
+})();
+</script>
+{% endblock %}

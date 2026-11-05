@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }} — ПАРТС{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto py-4 flex flex-col md:flex-row gap-8">
+    <aside class="md:w-60 shrink-0">
+        <nav class="flex md:flex-col gap-1 overflow-x-auto text-[15px] md:sticky md:top-24 -mx-4 px-4 md:mx-0 md:px-0">
+            {% for slug, title in [("about", "О компании"), ("contacts", "Контакты и реквизиты"), ("delivery", "Доставка"), ("payment", "Оплата"), ("warranty", "Гарантия и возврат"), ("privacy", "Конфиденциальность")] %}
+            <a href="/{{ slug }}" class="shrink-0 px-3 py-2 rounded-lg transition {% if page == slug %}bg-ink text-white dark:bg-night-text dark:text-night font-semibold{% else %}text-muted dark:text-night-muted hover:text-ink dark:hover:text-night-text hover:bg-white dark:hover:bg-night-surface{% endif %}">{{ title }}</a>
+            {% endfor %}
+        </nav>
+    </aside>
+    <article class="flex-1 min-w-0 card p-6 sm:p-10">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-6">{{ page_title }}</h1>
+        <div class="max-w-prose space-y-4 text-[16px] leading-relaxed text-ink/90 dark:text-night-text/90
+                    [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-ink [&_h2]:dark:text-night-text [&_h2]:mt-8 [&_h2]:mb-2
+                    [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5 [&_a]:text-purple-600 [&_a]:dark:text-purple-400 [&_a:hover]:underline">
+            {% block page_body %}{% endblock %}
+        </div>
+    </article>
+</div>
+{% endblock %}
